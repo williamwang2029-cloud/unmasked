@@ -10,7 +10,7 @@ Built at BU Spark! DS+X x Hackachusetts 2026 . **Hackachusetts track: Civic Acti
 | | |
 |---|---|
 | **Live demo** | [unmasked.streamlit.app](https://unmasked.streamlit.app) (generated demo data, rule-based mode, no install needed) |
-| **Demo video** | [VIDEO_URL](VIDEO_URL) |
+| **Demo video** | [Unmasked]([VIDEO_URL](https://youtu.be/5sCOx4sdCmk)) |
 | **How we used Kiro** | [KIRO.md](KIRO.md) |
 | **Run it locally** | [Try it in 5 minutes](#try-it-in-5-minutes-no-bu-data-or-llm-needed) |
 
