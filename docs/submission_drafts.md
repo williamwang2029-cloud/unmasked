@@ -1,5 +1,83 @@
 # Submission drafts (Sundai + Devpost)
 
+---
+
+# FINAL SUBMISSION TEXT (verified numbers — use these)
+
+## Sundai project card
+
+**Title:** Unmasked: Re-identification Risk Meter
+
+**Track:** Civic Action (CollegeHack V4 — BU IS&T Data Scrubbing / Tokenization challenge)
+
+**One-liner (under 20 words):**
+Removing names isn't anonymity: Unmasked measures, fixes, and explains re-identification risk in student survey data.
+
+**Description (~150 words):**
+"De-identified" student data often isn't. In BU's synthetic NSSE survey file, 67.8% of students are unique on
+just eight ordinary fields, 73.9% on fourteen, and nearly 100% once survey timing is added. Unmasked is an
+AI-agent pipeline that labels each column's privacy role from metadata only, measures k-anonymity, uniqueness,
+and attacker-persona risk, then runs a simulated linkage attack: an attacker knowing all nine core fields
+re-identifies 68.5% of targets. The agent tokenizes IDs into an encrypted vault, scrubs free text with Presidio,
+and generalizes and suppresses fields until every group has at least five students, dropping attack success to
+0% while removing only 2.5% of records. It then measures what the fix costs: ML utility falls modestly (R² 0.42
+to 0.37), and the smallest demographic group loses about 8x more records than the largest. Built with Kiro's
+spec-driven workflow; the LLM (Gemini) only ever sees metadata.
+
+**Tech used:** Python, pandas, scikit-learn, Microsoft Presidio + spaCy, Faker, cryptography (HMAC + Fernet),
+Streamlit + Plotly, Kiro (spec-driven development), Gemini via an OpenAI-compatible endpoint.
+
+**Links:**
+- GitHub: GITHUB_URL
+- Video: VIDEO_URL
+
+---
+
+## DS+X Devpost page
+
+**Inspiration**
+BU wants students to build on institutional data, but "de-identified" files can still expose individuals. In BU's
+synthetic survey data, 67.8% of students are unique on eight ordinary fields and nearly 100% once survey timing
+is included. Removing names clearly isn't enough.
+
+**What it does**
+1. An AI agent labels each column's privacy role using metadata only.
+2. Measures k-anonymity, uniqueness, riskiest field combinations, metadata leaks, attacker personas, and a
+   simulated linkage attack (68.5% re-identified by an attacker who knows all nine core fields).
+3. Tokenizes IDs (keyed HMAC tokens + encrypted vault with a separate key), removes direct identifiers, and
+   scrubs free text with Presidio.
+4. Optimizes generalization and suppression to reach k >= 5 with only 2.5% of records removed, optionally
+   protecting small demographic groups.
+5. Verifies with the attack (down to 0%), measures usefulness (group means, ML utility test) and fairness, and
+   writes a plain-English report and a privacy nutrition label.
+
+**How we built it**
+Python, pandas, scikit-learn, Microsoft Presidio + spaCy, Faker, cryptography (HMAC + Fernet), Streamlit + Plotly,
+and an LLM agent (Gemini through an OpenAI-compatible endpoint) that only ever sees column metadata and computed
+metrics. Built with Kiro's spec-driven workflow: three specs (role-a-risk-engine, role-b-mitigation,
+role-c-agent-app) and shared steering files let three people build in parallel against fixed interface contracts.
+
+**Challenges**
+Steep privacy-utility tradeoffs, keeping derived columns consistent through generalization, never sending row
+data to the LLM, and coordinating three branches in a repo that lived inside OneDrive (which fought git).
+
+**Accomplishments**
+Linkage-attack success from 68.5% to 0% with only 2.5% of records removed, PII detection at 1.00 precision/recall
+on structured identifiers, and a fairness finding: the smallest group loses about 8x more records than the largest.
+
+**What we learned**
+Privacy protection costs small groups the most, and an unconstrained optimizer can hide that by deleting the
+group column entirely. Measuring who pays is as important as measuring the risk.
+
+**What's next**
+Differential-privacy releases, must-keep analysis constraints, and a pilot with BU IS&T on real data in a secure
+environment.
+
+**Built with**
+python, pandas, scikit-learn, presidio, spacy, faker, cryptography, streamlit, plotly, kiro, gemini
+
+---
+
 ## Tagline
 Removing names isn't anonymity. Unmasked measures, fixes, and explains re-identification risk in student data.
 
