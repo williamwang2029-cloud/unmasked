@@ -22,7 +22,9 @@ re-identifies 68.5% of targets. The agent tokenizes IDs into an encrypted vault,
 and generalizes and suppresses fields until every group has at least five students, dropping attack success from
 68.5% to 0% while removing only 2.5% of records. It then measures what the fix costs: ML utility falls modestly
 (R² 0.42 to 0.37), and the smallest demographic group loses about 8x more records than the largest. Built with
-Kiro; the LLM sees only column metadata and computed metrics (never student rows).
+Kiro; the LLM sees only column metadata and computed metrics (never student rows). The repo includes a
+generated, fully fake demo dataset so anyone can run the app without BU's access-restricted data, with or
+without an LLM.
 
 **Tech used:** Python, pandas, scikit-learn, Microsoft Presidio + spaCy, Faker, cryptography (HMAC + Fernet),
 Streamlit + Plotly, Kiro (spec-driven development), Gemini via an OpenAI-compatible endpoint.
@@ -50,7 +52,7 @@ enough.
 4. Optimizes generalization and suppression to reach k >= 5 with only 2.5% of records removed, optionally
    protecting small demographic groups.
 5. Verifies with the attack (down to 0%), measures usefulness (group means, ML utility test) and fairness, and
-   writes a plain-English report and a privacy nutrition label.
+   writes a plain-English report and a release privacy summary.
 
 **How we built it**
 Python, pandas, scikit-learn, Microsoft Presidio + spaCy, Faker, cryptography (HMAC + Fernet), Streamlit + Plotly,
@@ -59,7 +61,8 @@ computed metrics, never student rows (the one exception is an optional detection
 comments). Built with Kiro: three specs (role-a-risk-engine, role-b-mitigation, role-c-agent-app) and shared
 steering files let three people build in parallel against fixed interface contracts. Roles A and B built their
 modules spec-first; Role C's spec documents its agent and app, with Kiro used for the Gemini integration, a
-release-warning feature, drafting, merges, and troubleshooting.
+release-warning feature, drafting, merges, and troubleshooting. The repo includes a generated, fully fake demo
+dataset so anyone can run the app without BU's access-restricted data, with or without an LLM.
 
 **Challenges**
 Steep privacy-utility tradeoffs, keeping derived columns consistent through generalization, never sending row
@@ -96,7 +99,7 @@ synthetic survey data, 68% of students are unique on eight ordinary fields.
 2. Measures k-anonymity, uniqueness, riskiest field combinations, metadata leaks, attacker personas, and a simulated linkage attack.
 3. Tokenizes IDs (keyed HMAC tokens + encrypted vault with a separate key), removes direct identifiers, scrubs free text with Presidio.
 4. Optimizes generalization and suppression to reach k >= 5 with <= 5% of records removed, optionally protecting small demographic groups.
-5. Verifies with the attack, measures usefulness (group means, ML utility test) and fairness, and writes a plain-English report and a privacy nutrition label.
+5. Verifies with the attack, measures usefulness (group means, ML utility test) and fairness, and writes a plain-English report and a release privacy summary.
 
 ## How we built it
 Python, pandas, scikit-learn, Microsoft Presidio + spaCy, Faker, cryptography (HMAC + Fernet), Streamlit + Plotly,

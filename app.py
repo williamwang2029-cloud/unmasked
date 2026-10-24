@@ -1,5 +1,6 @@
 """Unmasked: Re-identification Risk Meter (Streamlit app).  Run:  streamlit run app.py"""
 import json
+import os
 from pathlib import Path
 
 import pandas as pd
@@ -29,9 +30,25 @@ def res_json(name):
     return json.loads(p.read_text()) if p.exists() else None
 
 
+BU_PARQUET = Path(cfg["data"]["planted_parquet"])
+DEMO_CSV = Path("examples/demo_planted.csv")
+BU_OPTION = "BU synthetic NSSE (with planted PII)"
+DEMO_OPTION = "Demo data (generated, fake)"
+UPLOAD_OPTION = "Upload CSV/XLSX"
+
+
 @st.cache_data(show_spinner="Loading data…")
 def load_builtin():
-    return pd.read_parquet(cfg["data"]["planted_parquet"])
+    return pd.read_parquet(BU_PARQUET)
+
+
+@st.cache_data(show_spinner="Loading demo data…")
+def load_demo():
+    # logdate parsed as a date; MAJsecond kept as text; empty cells stay missing.
+    df = pd.read_csv(DEMO_CSV, dtype={"MAJsecond": "string"}, parse_dates=["logdate"])
+    if "row_id" not in df.columns:
+        df.insert(0, "row_id", range(len(df)))
+    return df
 
 
 def read_upload(f):
@@ -42,21 +59,62 @@ def read_upload(f):
     return df
 
 
+@st.cache_data(ttl=600, show_spinner=False)
+def llm_mode():
+    """Return (mode, model). One tiny test call; sends no data. Cached ~10 min."""
+    model = os.getenv("LLM_MODEL") or ""
+    if not llm.llm_enabled():
+        return "No LLM: rule-based mode", model
+    reply = llm.complete("Reply with OK.", max_tokens=5)
+    if reply:
+        return "LLM connected", model
+    return "LLM configured but not responding: using rule-based mode", model
+
+
+def using_llm(mode):
+    return mode == "LLM connected"
+
+
 # ---------------- sidebar ----------------
 st.sidebar.title("🛡️ Unmasked")
 st.sidebar.caption("Synthetic data only. Planted names, emails, IDs, and comments are fake.")
-src = st.sidebar.radio("Data", ["BU synthetic NSSE (with planted PII)", "Upload CSV/XLSX"])
-if src.startswith("BU"):
+
+options = []
+if BU_PARQUET.exists():
+    options.append(BU_OPTION)
+options.append(DEMO_OPTION)
+options.append(UPLOAD_OPTION)
+src = st.sidebar.radio("Data", options)
+is_bu = src == BU_OPTION
+
+if src == BU_OPTION:
     df = load_builtin()
+elif src == DEMO_OPTION:
+    if not DEMO_CSV.exists():
+        st.error("Demo data not found. Run: python scripts/make_demo_data.py")
+        st.stop()
+    df = load_demo()
+    st.info("Using generated demo data: fully fake, same columns as the BU survey. The BU dataset isn't "
+            "included in this repo. See the README.")
 else:
     up = st.sidebar.file_uploader("Upload a file", type=["csv", "xlsx"])
     if up is None:
-        st.info("Upload a file or switch to the built-in dataset.")
+        st.info("Upload a file, or switch to the demo dataset.")
         st.stop()
     df = read_upload(up)
 st.sidebar.write(f"**{len(df):,} rows × {df.shape[1] - 1} columns**")
-st.sidebar.write("AI agent: " + ("🟢 LLM connected" if llm.llm_enabled() else "⚪ rule-based fallback (no LLM key)"))
-st.sidebar.caption("The AI only ever sees column names, counts, and computed metrics, never student rows.")
+
+_mode, _model = llm_mode()
+_icon = {"LLM connected": "🟢", "LLM configured but not responding: using rule-based mode": "🟠",
+         "No LLM: rule-based mode": "⚪"}[_mode]
+_mode_label = _mode + (f" ({_model})" if using_llm(_mode) and _model else "")
+st.sidebar.info(f"{_icon} **{_mode_label}**")
+if st.sidebar.button("🔄 Recheck LLM connection"):
+    llm_mode.clear()
+    st.rerun()
+st.sidebar.caption("Risk measurement, mitigation, and attacks work the same with or without an LLM. The LLM "
+                   "only writes the plan, report wording, and column-role explanations, and it sees only "
+                   "column metadata and computed metrics.")
 
 tabs = st.tabs(["1 · Data", "2 · Column roles", "3 · Risk", "4 · Fix it", "5 · Before vs. after", "6 · Report & download"])
 
@@ -71,11 +129,14 @@ with tabs[1]:
     st.header("What is each column?")
     st.write("The agent labels every column from metadata only. Review and override before measuring risk.")
     if st.button("🤖 Classify columns") or "roles" not in st.session_state:
-        known = classify.roles_from_config(cfg) if src.startswith("BU") else None
+        # BU and demo share the BU survey's columns, so use the known schema for both.
+        known = classify.roles_from_config(cfg) if src in (BU_OPTION, DEMO_OPTION) else None
         st.session_state.profile = classify.profile_columns(df)
         st.session_state.roles = classify.classify_columns(st.session_state.profile, known)
     roles = st.session_state.roles
-    table = pd.DataFrame([{"column": c, "role": v["role"], "reason": v["reason"], "source": v["source"]}
+    SOURCE_LABELS = {"schema": "Known schema", "heuristic": "Rule-based", "llm": "LLM"}
+    table = pd.DataFrame([{"column": c, "role": v["role"], "reason": v["reason"],
+                           "source": SOURCE_LABELS.get(v["source"], v["source"])}
                           for c, v in roles.items()])
     edited = st.data_editor(table, hide_index=True, use_container_width=True, disabled=["column", "reason", "source"],
                             column_config={"role": st.column_config.SelectboxColumn("role", options=classify.ROLES, required=True)})
@@ -103,13 +164,14 @@ with tabs[2]:
         c4.metric("Average re-identification risk", f"{base['avg_risk']:.2f}")
 
         stairs = res_csv("staircase.csv")
-        if stairs is not None:
+        if is_bu and stairs is not None:
             stairs["label"] = stairs["n_fields"].astype(str) + " fields"
             fig = px.bar(stairs, x="label", y="pct_unique", text_auto=".0%", hover_data=["fields"],
                          title="Each ordinary field you add makes more students unique",
                          color_discrete_sequence=PALETTE)
             fig.update_layout(yaxis_tickformat=".0%", xaxis_title="", yaxis_title="% uniquely identifiable")
             st.plotly_chart(fig, use_container_width=True)
+            st.caption("Precomputed on BU's synthetic NSSE data.")
 
         LABELS = {"Year": "Year", "Class": "Class", "program": "Program", "FTFY": "First-time first-year",
                   "affiliation": "Affiliation", "MAJfirstcode": "First major", "MAJsecondcode": "Second major",
@@ -170,6 +232,12 @@ with tabs[3]:
                         help="Never merge or drop the demographic group column, so equity analyses stay possible.")
     scrub = st.radio("Free-text comments", ["drop", "presidio"], horizontal=True,
                      help="Presidio scrubbing on all rows can take a few minutes.")
+    _run_mode, _run_model = llm_mode()
+    if using_llm(_run_mode):
+        st.caption(f"The agent will run with an LLM ({_run_model}) writing the plan and report." if _run_model
+                   else "The agent will run with an LLM writing the plan and report.")
+    else:
+        st.caption("The agent will run in rule-based mode (no LLM).")
     if st.button("🤖 Run privacy agent", type="primary"):
         with st.status("Agent working…", expanded=True) as status:
             result = run_agent(df, roles, target_k=target_k, max_suppression=max_sup, protect_small_groups=protect,
@@ -181,6 +249,8 @@ with tabs[3]:
             status.update(label="Done", state="complete")
         st.session_state.result = result
         st.session_state.max_removed = max_sup
+        st.session_state.run_llm_mode = _run_mode
+        st.session_state.run_llm_model = _run_model
         rw = release_warnings(
             considered_qis=list(result["mitigation"]["levels"].keys()),
             active_qis=result["mitigation"]["active_qis"],
@@ -213,7 +283,7 @@ with tabs[4]:
             st.error(e)
         lab = r["label"]
         with st.container(border=True):
-            st.subheader("🏷️ Privacy nutrition label")
+            st.subheader("📋 Release Privacy Summary")
             a, b, c, d = st.columns(4)
             a.metric("Unique before → after", f"{lab['pct_unique_before']:.1%} → {lab['pct_unique_after']:.1%}")
             b.metric("Smallest group (k)", lab["k_after"])
@@ -235,14 +305,17 @@ with tabs[4]:
         col1, col2 = st.columns(2)
         with col1:
             fair = res_csv("fairness.csv")
-            if fair is not None:
+            if is_bu and fair is not None:
                 fig = px.bar(fair, x="group", y="pct_suppressed", color="setting", barmode="group", text_auto=".1%",
                              title="Who pays for privacy? Records removed by group", color_discrete_sequence=PALETTE)
+                fig.update_layout(yaxis_tickformat=".0%")
+                st.plotly_chart(fig, use_container_width=True)
+                st.caption("Precomputed on BU's synthetic NSSE data.")
             else:
                 fig = px.bar(r["fairness"], x="group", y="pct_suppressed", text_auto=".1%",
                              title="Records removed by group", color_discrete_sequence=PALETTE)
-            fig.update_layout(yaxis_tickformat=".0%")
-            st.plotly_chart(fig, use_container_width=True)
+                fig.update_layout(yaxis_tickformat=".0%")
+                st.plotly_chart(fig, use_container_width=True)
         with col2:
             st.subheader("Which analyses still work?")
             st.dataframe(pd.DataFrame([{"analysis by": k2, "status": v} for k2, v in r["utility"]["analysis_status"].items()]),
@@ -250,19 +323,22 @@ with tabs[4]:
             st.caption(f"Fields kept in the release: {rw['fields_kept']}")
             ms = res_json("mitigation_summary.json")
             mode = "protect_on" if r["protect_small_groups"] else "protect_off"
-            if ms and mode in ms:
+            if is_bu and ms and mode in ms:
                 ml = ms[mode]["ml"]
                 st.write(f"**ML utility test:** predicting engagement score SE, R² {ml['r2_original']:.2f} on original data "
                          f"vs {ml['r2_release']:.2f} on the protected release.")
+                st.caption("Precomputed on BU's synthetic NSSE data.")
         curve = res_csv("curve.csv")
-        if curve is not None:
+        if is_bu and curve is not None:
             fig = px.line(curve, x="k", y=["pct_suppressed", "mean_abs_shift"], markers=True,
                           title="Privacy vs. usefulness as k increases", color_discrete_sequence=PALETTE)
             st.plotly_chart(fig, use_container_width=True)
+            st.caption("Precomputed on BU's synthetic NSSE data.")
         det = res_csv("detection.csv")
-        if det is not None:
+        if is_bu and det is not None:
             st.subheader("PII detection on planted ground truth")
             st.dataframe(det, hide_index=True)
+            st.caption("Precomputed on BU's synthetic NSSE data.")
         with st.expander("Agent log"):
             st.write("\n".join(f"- {s}" for s in r["steps"]))
 
@@ -273,6 +349,12 @@ with tabs[5]:
     if r is None:
         st.info("Run the agent in tab 4.")
     else:
+        run_mode = st.session_state.get("run_llm_mode", "No LLM: rule-based mode")
+        run_model = st.session_state.get("run_llm_model", "")
+        if using_llm(run_mode):
+            st.caption(f"Written by: LLM ({run_model})" if run_model else "Written by: LLM")
+        else:
+            st.caption("Written by: rule-based template")
         st.markdown(r["report_md"])
         release = r["mitigation"]["release_df"].drop(columns=["row_id"], errors="ignore")
         st.download_button("⬇️ Download safe release (CSV)", release.to_csv(index=False), "release.csv", "text/csv")

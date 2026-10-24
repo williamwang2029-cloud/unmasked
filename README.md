@@ -4,6 +4,9 @@
 > (74% once prior-attendance flags are added, and 99.99% from all 14 fields plus survey timing).
 > Unmasked finds that risk, fixes it, and shows what the fix costs, and who pays for it.
 
+All results below come from BU's synthetic NSSE survey data (access-restricted, not included in this repo).
+The app runs out of the box on generated demo data, with or without an LLM. See **Try it in 5 minutes**.
+
 Built at BU Spark! DS+X × Hackachusetts 2026 for BU IS&T's Data Scrubbing / Tokenization challenge.
 
 ## Demo
@@ -24,9 +27,9 @@ identify a student with reasonable certainty, and ordinary survey fields clear t
 4. Optimizes generalization and suppression to reach k ≥ 5 with ≤ 5% of records removed, optionally
    protecting small demographic groups.
 5. Verifies with the attack, measures usefulness (group means and an ML utility test) and fairness, and writes
-   a plain-English report plus a privacy nutrition label.
+   a plain-English report plus a release privacy summary.
 
-## Results (synthetic NSSE data, 20,731 students)
+## Results (BU's synthetic NSSE data, 20,731 students)
 
 | | Before | After (protect small groups) |
 |---|---|---|
@@ -36,6 +39,17 @@ identify a student with reasonable certainty, and ordinary survey fields clear t
 | Linkage attack success (attacker knows all 9 core fields, 200 targets) | 68.5% | 0% |
 | Records removed | – | 2.5% |
 | ML utility, predicting engagement score (R²) | 0.42 | 0.37 |
+
+The demo dataset is generated separately, so it gives similar but different numbers.
+
+![Each ordinary field makes more students unique](results/charts/staircase.png)
+*Each ordinary field makes more students unique*
+
+![Simulated linkage attack before and after](results/charts/attack_before_after.png)
+*Simulated linkage attack before and after*
+
+![Who pays for privacy: records removed by group](results/charts/fairness.png)
+*Who pays for privacy: records removed by group*
 
 Survey timing is a strong but not standalone identifier: the survey date alone makes 11.7% of students unique
 and the response duration alone 11.6%; combined with all 14 fields, uniqueness reaches 99.99%.
@@ -61,15 +75,24 @@ IDs reach 1.00 precision and recall **on our planted test data**; names are hard
 | BU ID | 1.00 | 1.00 |
 | Person name | 1.00 | 0.91 |
 
-Out-of-sample stress test (`results/detection_stress_test.csv`, 20 hand-written sentences): on the 10
-name sentences, person-name detection scores about 0.90 precision and 0.90 recall. The small spaCy model
+Out-of-sample stress test (`results/detection_stress_test.csv`, 20 hand-written sentences): across the 20
+sentences, person-name detection scores about 0.90 precision and 0.90 recall. The small spaCy model
 misses some second names in a sentence (for example, a friend's full name introduced as a second subject) and
 occasionally flags a campus place as a person, which is why names trail the near-perfect scores for structured
 PII like emails and IDs.
 
 ## Data
-Synthetic NSSE-style survey data provided by BU IS&T (not included in this repo). Names, emails, IDs, and
-comments were planted with Faker for testing and are entirely fake. No real student data is used anywhere.
+The app supports three kinds of data:
+- **BU synthetic NSSE (our results).** Provided by BU IS&T to hackathon participants behind a BU login, so we
+  don't redistribute it. To reproduce our numbers, place `NSSE-synthetic.xlsx` and `lookup-synthetic.xlsx` in
+  `data/` and run `python scripts/build_cache.py`.
+- **Generated demo data (default without BU files).** `examples/demo_planted.csv` is entirely fake: same
+  columns and conventions as the BU survey, random values, plus fake planted names, emails, IDs, and comments.
+  Regenerate it with `python scripts/make_demo_data.py`.
+- **Your own file.** Upload a CSV or XLSX in the app. Column roles are guessed from metadata (and the LLM, if
+  configured); review them in tab 2 before measuring risk.
+
+No real student data is used anywhere.
 
 ## Responsible AI and ethics
 - The LLM sees only column metadata and computed metrics, never student rows. The one exception is an optional
@@ -107,27 +130,70 @@ Shared steering files (`.kiro/steering/product.md`, `structure.md`, `tech.md`) k
 ownership, naming conventions, and safety rules (for example: never send rows to the LLM; never commit data or
 keys).
 
-## Run it
-```bash
-# use Python 3.11 or 3.12 (some dependencies lag on 3.14)
-python -m venv .venv && source .venv/bin/activate      # Windows: .\.venv\Scripts\Activate.ps1
-pip install -r requirements.txt && python -m spacy download en_core_web_sm
-cp .env.example .env   # optional LLM settings (see below)
-# place NSSE-synthetic.xlsx and lookup-synthetic.xlsx in data/
-python scripts/build_cache.py && python scripts/run_experiments.py
-python scripts/smoke_test.py
+## Try it in 5 minutes (no BU data or LLM needed)
+Requires **Python 3.11 or 3.12** (some dependencies don't support 3.14 yet).
+
+**Windows (PowerShell)**, one command per line:
+```powershell
+git clone https://github.com/williamwang2029-cloud/unmasked.git
+cd unmasked
+py -3.12 -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+python -m spacy download en_core_web_sm
 streamlit run app.py
 ```
+If PowerShell blocks the activation script, run `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` once.
+
+**Mac/Linux:**
+```bash
+git clone https://github.com/williamwang2029-cloud/unmasked.git
+cd unmasked
+python3.12 -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+python -m spacy download en_core_web_sm
+streamlit run app.py
+```
+The app opens at http://localhost:8501 on the generated demo data, in rule-based mode unless you set up an LLM
+(below). The sidebar shows which mode is active. Press Ctrl+C in the terminal to stop it.
+
+### Using the app
+1. **Data:** preview the dataset (demo, BU, or your upload).
+2. **Column roles:** the agent labels each column (identifier, quasi-identifier, metadata, sensitive...);
+   review and override, then confirm.
+3. **Risk:** how many students are unique, the riskiest field pairs, attacker personas, and risk by
+   demographic group.
+4. **Fix it:** choose k, the maximum share of records to remove, and whether to protect small groups, then run
+   the privacy agent.
+5. **Before vs. after:** the release privacy summary, the attack before and after, who lost records, and which
+   analyses still work.
+6. **Report & download:** the plain-English report (labeled as LLM-written or rule-based) and the protected
+   dataset.
+
+### Reproducing our results (BU data required)
+```bash
+python scripts/build_cache.py
+python scripts/run_experiments.py --skip-presidio   # about a minute
+python scripts/run_experiments.py                   # adds PII detection, several minutes
+python scripts/check_numbers.py                     # confirms the headline numbers
+```
+`results/` is already included, so this is only needed to regenerate it.
+
+### Checks
+- `python scripts/smoke_test.py`: end-to-end agent run (uses BU data if present, otherwise the demo data)
+- `python scripts/checks/test_release_warnings.py`: no data needed
+- `python scripts/check_llm.py`: tests the optional LLM connection
 
 ### LLM (optional)
 
-The app runs fully without an LLM (rule-based fallback). With a key, the agent writes nicer plans, reports,
-and role explanations. The LLM sees only column metadata and computed metrics, never student rows (the one
-exception is an optional detection test that sends fully synthetic planted comments).
+The app works **fully without an LLM** (rule-based mode). With a key, the agent writes nicer plans, reports,
+and column-role explanations. Risk, mitigation, and attacks are identical either way. The LLM sees only column
+metadata and computed metrics, never student rows (the one exception is an optional detection test that sends
+fully synthetic planted comments).
 
-Set these in `.env` (copied from `.env.example`, never committed). You can use Anthropic, OpenAI, or any
-OpenAI-compatible endpoint. Google's Gemini is free via AI Studio and works through the OpenAI-compatible
-endpoint:
+To enable it, create a `.env` from the template — Windows: `copy .env.example .env`; Mac/Linux:
+`cp .env.example .env` — then set these (Google's Gemini is free via AI Studio and works through the
+OpenAI-compatible endpoint):
 
 ```env
 LLM_PROVIDER=openai
@@ -136,16 +202,22 @@ OPENAI_API_KEY=your-ai-studio-key
 OPENAI_BASE_URL=https://generativelanguage.googleapis.com/v1beta/openai/
 ```
 
-Omit `OPENAI_BASE_URL` to use OpenAI directly, or set `LLM_PROVIDER=anthropic` with `ANTHROPIC_API_KEY`.
-Confirm it connected: the app sidebar shows "🟢 LLM connected" (not "⚪ rule-based fallback"). On any error
-the wrapper silently falls back to rule-based mode, so the sidebar is the quickest way to tell it worked.
+Omit `OPENAI_BASE_URL` to use OpenAI directly, or set `LLM_PROVIDER=anthropic` with `ANTHROPIC_API_KEY`. The
+app sidebar shows the current mode: **"LLM connected"** (with the model name), **"LLM configured but not
+responding"** (key set but the call failed — the app uses rule-based mode), or **"No LLM: rule-based mode"**.
+Use the sidebar's "Recheck LLM connection" button after changing `.env`.
 
 Troubleshooting: run `python scripts/check_llm.py` to make one live test call. It prints the resolved config
 (API key masked), reports whether the LLM is enabled, and either shows the model's reply or the exact error, so
 you can tell a key/model problem apart from a connection problem.
 
 ## Team
-Role A · Role B · Role C
+- **KieranM** (Role A) — risk engine and attacks: data loading, k-anonymity/uniqueness, riskiest-combination
+  search, attacker personas, and the simulated linkage attack.
+- **KealohaK** (Role B) — mitigation and evaluation: PII planting, Presidio text scrubbing, HMAC tokenization
+  with an encrypted vault, the generalization/suppression optimizer, and the utility and fairness measures.
+- **WilliamW** (Role C) — agent and app: the privacy agent orchestration, the metadata-only LLM wrapper and
+  column classifier, and the six-tab Streamlit app.
 
 ## Credits
 BU IS&T (challenge and synthetic data), NSSE codebooks, Microsoft Presidio, spaCy, Faker, scikit-learn,
