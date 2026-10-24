@@ -111,14 +111,34 @@ with tabs[2]:
             fig.update_layout(yaxis_tickformat=".0%", xaxis_title="", yaxis_title="% uniquely identifiable")
             st.plotly_chart(fig, use_container_width=True)
 
+        LABELS = {"Year": "Year", "Class": "Class", "program": "Program", "FTFY": "First-time first-year",
+                  "affiliation": "Affiliation", "MAJfirstcode": "First major", "MAJsecondcode": "Second major",
+                  "begincol": "Began at college", "edaspire": "Education goal",
+                  "attend_voc": "Attended vocational", "attend_com": "Attended community college",
+                  "attend_col": "Attended other college", "attend_none": "No prior attendance",
+                  "attend_other": "Other prior attendance", "logdate": "Survey date", "duration": "Survey duration"}
+
         if len(quasi) >= 2:
-            combos = risk.riskiest_combos(df, quasi, max_size=2, k=k)
+            # attendance flags are all ~0%; leave them out to keep the grid readable
+            heat_qis = [q for q in quasi if not q.startswith("attend_")]
+            if len(heat_qis) < 2:
+                heat_qis = quasi
+            combos = risk.riskiest_combos(df, heat_qis, max_size=2, k=k)
             pairs = combos[combos["size"] == 2].copy()
-            pairs[["a", "b"]] = pairs["combo"].str.split(" + ", regex=False, expand=True)
-            heat = pairs.pivot(index="a", columns="b", values="pct_unique")
-            fig = px.imshow(heat, text_auto=".0%", color_continuous_scale="Blues",
-                            title="Riskiest pairs of fields (% unique)")
-            st.plotly_chart(fig, use_container_width=True)
+            if len(pairs):
+                pairs[["a", "b"]] = pairs["combo"].str.split(" + ", regex=False, expand=True)
+                both = pd.concat([pairs, pairs.rename(columns={"a": "b", "b": "a"})])   # make it symmetric
+                heat = (both.pivot(index="a", columns="b", values="pct_below_k")
+                            .reindex(index=heat_qis, columns=heat_qis))
+                heat = heat.rename(index=lambda c: LABELS.get(c, c), columns=lambda c: LABELS.get(c, c))
+                top = pairs.sort_values("pct_below_k", ascending=False).iloc[0]
+                fig = px.imshow(heat, text_auto=".0%", color_continuous_scale="Cividis", aspect="auto",
+                                labels=dict(x="", y="", color=f"% in groups < {k}"),
+                                title=f"Riskiest pair: {LABELS.get(top['a'], top['a'])} + "
+                                      f"{LABELS.get(top['b'], top['b'])}<br>puts {top['pct_below_k']:.0%} "
+                                      f"of students in groups smaller than {k}")
+                fig.update_layout(height=550, coloraxis_colorbar_tickformat=".0%")
+                st.plotly_chart(fig, use_container_width=True)
 
         col1, col2 = st.columns(2)
         with col1:
