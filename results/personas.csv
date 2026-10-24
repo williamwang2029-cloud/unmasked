@@ -1,0 +1,6 @@
+persona,fields,pct_unique,pct_below_k
+classmate,Year + Class + MAJfirstcode,0.009888572668949882,0.05730548454006078
+club_roster,Year + Class + program + affiliation,0.005257826443490425,0.0341517534127635
+linkedin,Year + Class + program + MAJfirstcode + MAJsecondcode,0.2596594472046693,0.5303169166948049
+survey_insider,logdate + Class + affiliation,0.22888427958130336,0.33751386812020645
+everything,Year + Class + program + FTFY + affiliation + MAJfirstcode + MAJsecondcode + begincol + edaspire,0.6779701895711736,0.8986541893782258
