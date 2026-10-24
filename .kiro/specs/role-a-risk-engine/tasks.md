@@ -49,12 +49,12 @@
   - Pending: 0% re-id on the mitigated release with `transform` — needs Role B's `plant.py` + `mitigate.py`. `check_numbers.py` auto-runs this once `nsse_planted.parquet` exists.
   - _Requirements: 3 (verification)_
 
-- [ ] 7. Produce pitch charts (`notebooks/results.ipynb`, `results/charts/`)
+- [x] 7. Produce pitch charts (`notebooks/results.ipynb`, `results/charts/`)
   - Save PNGs for: uniqueness staircase, riskiest-pairs heatmap (size 2), persona risk bars, attack before/after (protect_on), risk by group.
   - Every chart: text labels on bars, percentage formatting, `px.colors.qualitative.Safe`, finding-first titles.
   - _Requirements: 5.1, 5.2_
 
-- [ ] 8. Share caches and post numbers to the team
+- [x] 8. Share caches and post numbers to the team
   - Send `nsse_clean.parquet`, `nsse_planted.parquet`, `pii_truth.parquet` to B and C privately (never via Git).
   - Post % unique (8, 14, with metadata), metadata leaks, persona numbers, attack before/after, top 3 riskiest pairs, risk by group.
   - Confirm `data/` and `keys/` are not staged before any push.

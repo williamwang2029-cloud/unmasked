@@ -185,8 +185,8 @@ acceptance checks are blocked until it exists (or a minimal local stub of `class
       confirm one row per k with the expected columns.
     - _Requirements: 6.4, 6.5, 6.7_
 
-- [ ] 6. Recreate the Role B sections of `scripts/run_experiments.py`
-  - [ ] 6.1 Write the Role B sections transcribing the reference from design.md
+- [x] 6. Recreate the Role B sections of `scripts/run_experiments.py`
+  - [x] 6.1 Write the Role B sections transcribing the reference from design.md
     - Add argparse flags (`--skip-presidio`, `--presidio-sample`, `--llm-sample`); load config;
       read planted/truth parquet; build `work = df.drop(columns=R["planted"])`.
     - Mitigation in both modes (`protect_on` / `protect_off`) writing `results/attack.json`,
@@ -197,14 +197,14 @@ acceptance checks are blocked until it exists (or a minimal local stub of `class
       `reid/attacks.py` (A), and Tasks 1–5.
     - _Requirements: 7.1, 7.2, 7.3, 7.4, 7.5, 8.2_
 
-  - [ ] 6.2 Acceptance check: run the experiment runner (B2 Task B6)
+  - [x] 6.2 Acceptance check: run the experiment runner (B2 Task B6)
     - Run `python scripts/run_experiments.py --skip-presidio` and confirm `results/attack.json`,
       `results/fairness.csv`, `results/mitigation_summary.json`, and `results/curve.csv` are written.
     - With Presidio available, run without the flag and confirm `results/detection.csv` is written
       with the four methods (`presidio`, `presidio_same_sample`, `llm`, `combined`).
     - _Requirements: 7.1, 7.3, 7.4, 7.5_
 
-- [ ] 7. Final checkpoint — ensure all acceptance checks pass
+- [x] 7. Final checkpoint — ensure all acceptance checks pass
   - Ensure all tests pass, ask the user if questions arise.
 
 ## Notes

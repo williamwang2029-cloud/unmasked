@@ -149,7 +149,7 @@ If PowerShell blocks the activation script, run `Set-ExecutionPolicy -Scope Curr
 ```bash
 git clone https://github.com/williamwang2029-cloud/unmasked.git
 cd unmasked
-python3.12 -m venv .venv && source .venv/bin/activate
+python3.12 -m venv .venv && source .venv/bin/activate   # or python3.11
 pip install -r requirements.txt
 python -m spacy download en_core_web_sm
 streamlit run app.py
