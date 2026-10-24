@@ -66,6 +66,30 @@ python scripts/smoke_test.py
 streamlit run app.py
 ```
 
+### LLM (optional)
+
+The app runs fully without an LLM (rule-based fallback). With a key, the agent writes nicer plans, reports,
+and role explanations. The LLM only ever sees column metadata and computed metrics, never student rows.
+
+Set these in `.env` (copied from `.env.example`, never committed). You can use Anthropic, OpenAI, or any
+OpenAI-compatible endpoint. Google's Gemini is free via AI Studio and works through the OpenAI-compatible
+endpoint:
+
+```env
+LLM_PROVIDER=openai
+LLM_MODEL=gemini-2.0-flash   # any model name from Google AI Studio
+OPENAI_API_KEY=your-ai-studio-key
+OPENAI_BASE_URL=https://generativelanguage.googleapis.com/v1beta/openai/
+```
+
+Omit `OPENAI_BASE_URL` to use OpenAI directly, or set `LLM_PROVIDER=anthropic` with `ANTHROPIC_API_KEY`.
+Confirm it connected: the app sidebar shows "🟢 LLM connected" (not "⚪ rule-based fallback"). On any error
+the wrapper silently falls back to rule-based mode, so the sidebar is the quickest way to tell it worked.
+
+Troubleshooting: run `python scripts/check_llm.py` to make one live test call. It prints the resolved config
+(API key masked), reports whether the LLM is enabled, and either shows the model's reply or the exact error, so
+you can tell a key/model problem apart from a connection problem.
+
 ## Team
 A · B · C
 
