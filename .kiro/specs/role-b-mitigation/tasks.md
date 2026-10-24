@@ -63,15 +63,15 @@ acceptance checks are blocked until it exists (or a minimal local stub of `class
       (which writes the planted/truth parquet). Do NOT implement `build_cache.py` — it is Role A's.
     - _Requirements: 1.6, 1.7_
 
-- [ ] 2. Recreate `hierarchies.yaml` and `reid/mitigate.py` (hierarchies + greedy mitigation)
-  - [ ] 2.1 Write `hierarchies.yaml` transcribing the reference from design.md
+- [x] 2. Recreate `hierarchies.yaml` and `reid/mitigate.py` (hierarchies + greedy mitigation)
+  - [x] 2.1 Write `hierarchies.yaml` transcribing the reference from design.md
     - Define ordered levels for every QI and metadata column; level 0 = identity, last level = `drop`.
     - Support rule types `identity`, `map`, `map_other`, `from_column`, `has_value`, `month`,
       `year`, `bins`, `drop`; include the `derived:` lockstep section.
     - Use `label_yes`/`label_no` (not `yes`/`no`) and plain integer `1000000000` (not `1.0e12`).
     - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5, 8.4_
 
-  - [ ] 2.2 Write `reid/mitigate.py` transcribing the reference from design.md
+  - [x] 2.2 Write `reid/mitigate.py` transcribing the reference from design.md
     - Transcribe `load_hierarchies`, `_h`, `max_level`, `_apply_rule`, `apply_levels`,
       `make_transform`, `suppress`, `_group_supp`, and
       `greedy_generalize(df, qis, k=5, max_suppression=0.05, max_group_suppression=None, group_col="affiliation", protect=(), must_keep=())`.
@@ -97,7 +97,7 @@ acceptance checks are blocked until it exists (or a minimal local stub of `class
       class over present `qis` has size ≥ k.
     - **Validates: Requirements 3.6**
 
-  - [ ] 2.6 Acceptance check: run greedy_generalize both modes (B2 Task B1)
+  - [x] 2.6 Acceptance check: run greedy_generalize both modes (B2 Task B1)
     - On 14 QIs + 2 metadata columns, k=5, `max_suppression=0.05`.
     - protect ON (`protect=[affiliation]`, `max_group_suppression=0.10`): verify ~2.5% removed,
       0% unique, `affiliation` kept, per-group removal from ~6.9% (Diademed sifaka) down to
@@ -106,8 +106,8 @@ acceptance checks are blocked until it exists (or a minimal local stub of `class
     - Verify each run completes in ~4–5 s.
     - _Requirements: 3.12, 3.13, 3.14_
 
-- [ ] 3. Recreate `reid/tokens.py` (reversible tokenization vault)
-  - [ ] 3.1 Write `reid/tokens.py` transcribing the reference from design.md
+- [x] 3. Recreate `reid/tokens.py` (reversible tokenization vault)
+  - [x] 3.1 Write `reid/tokens.py` transcribing the reference from design.md
     - Transcribe `ensure_keys`, `_join_key`, `_vault`, `join_token`, `_vault_path`,
       `tokenize_column`, `detokenize`.
     - `join_token` = HMAC-SHA256 hex[:16] (deterministic). `tokenize_column` replaces the column
@@ -122,22 +122,22 @@ acceptance checks are blocked until it exists (or a minimal local stub of `class
     - **Validates: Requirements 4.3, 4.4, 4.6**
     - Use `hypothesis` over random strings for the round trip.
 
-  - [ ] 3.3 Acceptance check: round-trip and key hygiene (B2 Task B3)
+  - [x] 3.3 Acceptance check: round-trip and key hygiene (B2 Task B3)
     - Verify `detokenize(tokenize_column(df, "student_id").student_id[0], "student_id")` returns
       the original value.
     - Confirm `keys/` (including `vault.key` and `vault_*.csv`) is gitignored and nothing in
       `keys/` is committed.
     - _Requirements: 4.6, 8.1, 9.3_
 
-- [ ] 4. Recreate `reid/pii_text.py` (PII detection, scrubbing, scoring)
-  - [ ] 4.1 Verify Presidio setup first (B1 quick check) — main unknown
+- [x] 4. Recreate `reid/pii_text.py` (PII detection, scrubbing, scoring)
+  - [x] 4.1 Verify Presidio setup first (B1 quick check) — main unknown
     - Ensure `en_core_web_sm` is installed (`python -m spacy download en_core_web_sm`; small model).
     - Run `presidio_detect("Email jsmith4@bu.edu or call 617-555-0142. My ID is U12345678 and my advisor Maria Lopez helped.")`.
     - Expect EMAIL_ADDRESS, PHONE_NUMBER, BU_ID, and PERSON. If PERSON is missed, lower
       `threshold` to 0.3 and retest. Presidio setup is the main unknown — verify before scoring.
     - _Requirements: 5.1, 5.3_
 
-  - [ ] 4.2 Write `reid/pii_text.py` transcribing the reference from design.md
+  - [x] 4.2 Write `reid/pii_text.py` transcribing the reference from design.md
     - Transcribe `ENTITIES`, `_engine`, `presidio_detect`, `LLM_SYSTEM`, `llm_detect`, `_dedupe`,
       `scrub_text`, `combine`, `evaluate_detection`.
     - Presidio uses `en_core_web_sm` + custom `BU_ID` recognizer (`\bU\d{8}\b`, score 0.9); return
@@ -155,15 +155,15 @@ acceptance checks are blocked until it exists (or a minimal local stub of `class
     - **Validates: Requirements 5.8**
     - Build small hand-crafted truth/prediction pairs covering TP, FP, FN.
 
-  - [ ] 4.4 Acceptance check: score detection on a 1,500-comment sample (B2 Task B4)
+  - [x] 4.4 Acceptance check: score detection on a 1,500-comment sample (B2 Task B4)
     - Build `predictions = {row_id: presidio_detect(comment)}` over a 1,500-comment sample of the
       planted data; run `evaluate_detection(truth, predictions)`.
     - Expect EMAIL_ADDRESS and BU_ID near 100% precision/recall; phone high; PERSON lower with the
       small model. Report numbers honestly — misses are a finding.
     - _Requirements: 5.10_
 
-- [ ] 5. Recreate `reid/utility.py` (utility, fairness, curve)
-  - [ ] 5.1 Write `reid/utility.py` transcribing the reference from design.md
+- [x] 5. Recreate `reid/utility.py` (utility, fairness, curve)
+  - [x] 5.1 Write `reid/utility.py` transcribing the reference from design.md
     - Transcribe `group_means`, `utility_report`, `_EXCLUDE_PREFIXES`, `_features`, `ml_utility`,
       `fairness_report`, `privacy_utility_curve`.
     - `utility_report` draws group labels from `original_df` joined on `row_id`; sets
@@ -179,7 +179,7 @@ acceptance checks are blocked until it exists (or a minimal local stub of `class
       per-group `pct_suppressed`.
     - _Requirements: 6.3, 6.6_
 
-  - [ ] 5.3 Acceptance check: utility, ML, fairness, curve (B2 Task B5)
+  - [x] 5.3 Acceptance check: utility, ML, fairness, curve (B2 Task B5)
     - Run `utility_report`; run `ml_utility` and verify R² ≈ 0.42 original vs ≈ 0.37 (protect-on)
       / ≈ 0.41 (protect-off); run `fairness_report`; run `privacy_utility_curve` at k=2,3,5,10 and
       confirm one row per k with the expected columns.

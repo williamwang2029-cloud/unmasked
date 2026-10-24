@@ -31,6 +31,139 @@
         "chatSessionId": "sess_cc2e3188-d053-41b7-9c80-a06962a24c21",
         "timestamp": 1792864287111
       }
+    ],
+    "4.1 Verify Presidio setup first (B1 quick check) — main unknown": [
+      {
+        "executionId": "1fd53617-c601-4581-8fa9-42c70379a717",
+        "chatSessionId": "sess_d3c4af0a-9a79-401f-996a-513b0cee13e0",
+        "timestamp": 1792865168825
+      },
+      {
+        "executionId": "1fd53617-c601-4581-8fa9-42c70379a717",
+        "chatSessionId": "sess_d3c4af0a-9a79-401f-996a-513b0cee13e0",
+        "timestamp": 1792865291893
+      }
+    ],
+    "4.2 Write `reid/pii_text.py` transcribing the reference from design.md": [
+      {
+        "executionId": "1fd53617-c601-4581-8fa9-42c70379a717",
+        "chatSessionId": "sess_d3c4af0a-9a79-401f-996a-513b0cee13e0",
+        "timestamp": 1792865295112
+      },
+      {
+        "executionId": "1fd53617-c601-4581-8fa9-42c70379a717",
+        "chatSessionId": "sess_d3c4af0a-9a79-401f-996a-513b0cee13e0",
+        "timestamp": 1792865369079
+      }
+    ],
+    "4.4 Acceptance check: score detection on a 1,500-comment sample (B2 Task B4)": [
+      {
+        "executionId": "1fd53617-c601-4581-8fa9-42c70379a717",
+        "chatSessionId": "sess_d3c4af0a-9a79-401f-996a-513b0cee13e0",
+        "timestamp": 1792865372952
+      },
+      {
+        "executionId": "1fd53617-c601-4581-8fa9-42c70379a717",
+        "chatSessionId": "sess_d3c4af0a-9a79-401f-996a-513b0cee13e0",
+        "timestamp": 1792865542932
+      }
+    ],
+    "4. Recreate `reid/pii_text.py` (PII detection, scrubbing, scoring)": [
+      {
+        "executionId": "1fd53617-c601-4581-8fa9-42c70379a717",
+        "chatSessionId": "sess_d3c4af0a-9a79-401f-996a-513b0cee13e0",
+        "timestamp": 1792865543349
+      }
+    ],
+    "3.1 Write `reid/tokens.py` transcribing the reference from design.md": [
+      {
+        "executionId": "4c823812-e2ee-4834-b450-8ae09a084a1e",
+        "chatSessionId": "sess_d3c4af0a-9a79-401f-996a-513b0cee13e0",
+        "timestamp": 1792867410864
+      },
+      {
+        "executionId": "4c823812-e2ee-4834-b450-8ae09a084a1e",
+        "chatSessionId": "sess_d3c4af0a-9a79-401f-996a-513b0cee13e0",
+        "timestamp": 1792867510946
+      }
+    ],
+    "3.3 Acceptance check: round-trip and key hygiene (B2 Task B3)": [
+      {
+        "executionId": "4c823812-e2ee-4834-b450-8ae09a084a1e",
+        "chatSessionId": "sess_d3c4af0a-9a79-401f-996a-513b0cee13e0",
+        "timestamp": 1792867514252
+      }
+    ],
+    "3. Recreate `reid/tokens.py` (reversible tokenization vault)": [
+      {
+        "executionId": "4c823812-e2ee-4834-b450-8ae09a084a1e",
+        "chatSessionId": "sess_d3c4af0a-9a79-401f-996a-513b0cee13e0",
+        "timestamp": 1792867514310
+      }
+    ],
+    "2.1 Write `hierarchies.yaml` transcribing the reference from design.md": [
+      {
+        "executionId": "4c823812-e2ee-4834-b450-8ae09a084a1e",
+        "chatSessionId": "sess_d3c4af0a-9a79-401f-996a-513b0cee13e0",
+        "timestamp": 1792867520133
+      },
+      {
+        "executionId": "4ef4bf76-a648-4f10-92e7-fac5b7aa500d",
+        "chatSessionId": "sess_d3c4af0a-9a79-401f-996a-513b0cee13e0",
+        "timestamp": 1792867627893
+      },
+      {
+        "executionId": "4ef4bf76-a648-4f10-92e7-fac5b7aa500d",
+        "chatSessionId": "sess_d3c4af0a-9a79-401f-996a-513b0cee13e0",
+        "timestamp": 1792867827444
+      }
+    ],
+    "2.2 Write `reid/mitigate.py` transcribing the reference from design.md": [
+      {
+        "executionId": "4ef4bf76-a648-4f10-92e7-fac5b7aa500d",
+        "chatSessionId": "sess_d3c4af0a-9a79-401f-996a-513b0cee13e0",
+        "timestamp": 1792867830016
+      }
+    ],
+    "2.6 Acceptance check: run greedy_generalize both modes (B2 Task B1)": [
+      {
+        "executionId": "4ef4bf76-a648-4f10-92e7-fac5b7aa500d",
+        "chatSessionId": "sess_d3c4af0a-9a79-401f-996a-513b0cee13e0",
+        "timestamp": 1792867833033
+      }
+    ],
+    "2. Recreate `hierarchies.yaml` and `reid/mitigate.py` (hierarchies + greedy mitigation)": [
+      {
+        "executionId": "4ef4bf76-a648-4f10-92e7-fac5b7aa500d",
+        "chatSessionId": "sess_d3c4af0a-9a79-401f-996a-513b0cee13e0",
+        "timestamp": 1792867833103
+      }
+    ],
+    "5.1 Write `reid/utility.py` transcribing the reference from design.md": [
+      {
+        "executionId": "b771bf19-5402-4199-83b4-c54b61c43382",
+        "chatSessionId": "sess_d3c4af0a-9a79-401f-996a-513b0cee13e0",
+        "timestamp": 1792868400025
+      },
+      {
+        "executionId": "b771bf19-5402-4199-83b4-c54b61c43382",
+        "chatSessionId": "sess_d3c4af0a-9a79-401f-996a-513b0cee13e0",
+        "timestamp": 1792868564114
+      }
+    ],
+    "5.3 Acceptance check: utility, ML, fairness, curve (B2 Task B5)": [
+      {
+        "executionId": "b771bf19-5402-4199-83b4-c54b61c43382",
+        "chatSessionId": "sess_d3c4af0a-9a79-401f-996a-513b0cee13e0",
+        "timestamp": 1792868566943
+      }
+    ],
+    "5. Recreate `reid/utility.py` (utility, fairness, curve)": [
+      {
+        "executionId": "b771bf19-5402-4199-83b4-c54b61c43382",
+        "chatSessionId": "sess_d3c4af0a-9a79-401f-996a-513b0cee13e0",
+        "timestamp": 1792868566989
+      }
     ]
   }
 }
