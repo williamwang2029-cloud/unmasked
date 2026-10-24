@@ -216,12 +216,17 @@ with tabs[2]:
                     st.plotly_chart(fig, use_container_width=True)
         with col2:
             g = cfg["roles"]["group_col"]
-            if g in df.columns:
+            if g in df.columns and quasi:
                 rbg = risk.risk_by_group(df, quasi, g, k)
-                fig = px.bar(rbg, x="group", y="pct_below_k", text_auto=".0%",
-                             title=f"Share at risk (group < {k}) by {g}", color_discrete_sequence=PALETTE)
-                fig.update_layout(yaxis_tickformat=".0%")
-                st.plotly_chart(fig, use_container_width=True)
+                if rbg is not None and len(rbg) and "group" in rbg.columns:
+                    fig = px.bar(rbg, x="group", y="pct_below_k", text_auto=".0%",
+                                 title=f"Share at risk (group < {k}) by {g}", color_discrete_sequence=PALETTE)
+                    fig.update_layout(yaxis_tickformat=".0%")
+                    st.plotly_chart(fig, use_container_width=True)
+                else:
+                    st.info("Not enough data to show risk by group for this file.")
+            else:
+                st.info("No demographic group column in this file, so risk-by-group can't be shown.")
         if meta:
             st.subheader("Hidden leak: survey metadata")
             st.dataframe(risk.metadata_leaks(df, cols=meta, combos=()), hide_index=True)
@@ -301,10 +306,13 @@ with tabs[4]:
 
         atk = pd.DataFrame([{"persona": p, "when": w, "re-identified": v[w]["correct_rate"]}
                             for p, v in r["attacks"].items() for w in ("before", "after")])
-        fig = px.bar(atk, x="persona", y="re-identified", color="when", barmode="group", text_auto=".0%",
-                     title="Simulated linkage attacks (200 targets each)", color_discrete_sequence=PALETTE)
-        fig.update_layout(yaxis_tickformat=".0%")
-        st.plotly_chart(fig, use_container_width=True)
+        if len(atk):
+            fig = px.bar(atk, x="persona", y="re-identified", color="when", barmode="group", text_auto=".0%",
+                         title="Simulated linkage attacks (200 targets each)", color_discrete_sequence=PALETTE)
+            fig.update_layout(yaxis_tickformat=".0%")
+            st.plotly_chart(fig, use_container_width=True)
+        else:
+            st.info("No attacker personas could be simulated for this file.")
 
         col1, col2 = st.columns(2)
         with col1:
@@ -316,14 +324,22 @@ with tabs[4]:
                 st.plotly_chart(fig, use_container_width=True)
                 st.caption("Precomputed on BU's synthetic NSSE data.")
             else:
-                fig = px.bar(r["fairness"], x="group", y="pct_suppressed", text_auto=".1%",
-                             title="Records removed by group", color_discrete_sequence=PALETTE)
-                fig.update_layout(yaxis_tickformat=".0%")
-                st.plotly_chart(fig, use_container_width=True)
+                fair_live = r["fairness"]
+                if fair_live is None or len(fair_live) == 0 or "group" not in getattr(fair_live, "columns", []):
+                    st.info("No demographic group column in this file, so suppression-by-group can't be shown.")
+                else:
+                    fig = px.bar(fair_live, x="group", y="pct_suppressed", text_auto=".1%",
+                                 title="Records removed by group", color_discrete_sequence=PALETTE)
+                    fig.update_layout(yaxis_tickformat=".0%")
+                    st.plotly_chart(fig, use_container_width=True)
         with col2:
             st.subheader("Which analyses still work?")
-            st.dataframe(pd.DataFrame([{"analysis by": k2, "status": v} for k2, v in r["utility"]["analysis_status"].items()]),
-                         hide_index=True)
+            analysis_status = r["utility"]["analysis_status"]
+            if analysis_status:
+                st.dataframe(pd.DataFrame([{"analysis by": k2, "status": v} for k2, v in analysis_status.items()]),
+                             hide_index=True)
+            else:
+                st.info("No grouped analyses defined for this file.")
             st.caption(f"Fields kept in the release: {rw['fields_kept']}")
             ms = res_json("mitigation_summary.json")
             mode = "protect_on" if r["protect_small_groups"] else "protect_off"

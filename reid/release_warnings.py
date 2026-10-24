@@ -35,11 +35,17 @@ def release_warnings(considered_qis, active_qis, analysis_status, pct_removed, m
     too_few_fields_kept = total > 0 and kept < 0.25 * total
 
     if too_many_analyses_lost or too_few_fields_kept:
-        warnings.append(
-            f"Strong privacy, low usefulness: only {kept} of {total} fields survived and "
-            f"{len(lost)} of {n_by} analyses are lost ({', '.join(lost) or 'none'}). "
-            f"Try a smaller k or allowing a little more record removal."
-        )
+        if n_by > 0:
+            warnings.append(
+                f"Strong privacy, low usefulness: only {kept} of {total} fields survived and "
+                f"{len(lost)} of {n_by} analyses are lost ({', '.join(lost) or 'none'}). "
+                f"Try a smaller k or allowing a little more record removal."
+            )
+        else:
+            warnings.append(
+                f"Strong privacy, low usefulness: only {kept} of {total} fields survived. "
+                f"Try a smaller k or allowing a little more record removal."
+            )
 
     if pct_removed > max_removed + 1e-9:
         errors.append(
