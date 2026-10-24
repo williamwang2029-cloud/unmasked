@@ -8,7 +8,7 @@ Our privacy agent finds the risk, fixes it, and shows what the fix costs, includ
 Flow: load data + planted fake PII -> AI agent labels column roles (metadata only) -> measure risk
 (k-anonymity, % unique, riskiest combos, metadata leaks, attacker personas, linkage attack, risk by group) ->
 mitigate (tokenize IDs, scrub text, generalize + suppress to target k) -> verify, measure utility and fairness ->
-plain-English report + privacy nutrition label + safe download.
+plain-English report + release privacy summary + safe download.
 
 Deadlines: Hackachusetts (Sundai: repo + video, Kiro required) Sat 8:00 PM; DS+X Devpost Sun 11:00 AM.
 Judging stresses AI integration, responsible innovation, Kiro use. DS+X: data science must stand without the LLM.
