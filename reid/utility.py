@@ -13,6 +13,8 @@ def utility_report(original_df, release_df, scales, by_list, levels=None):
     the distortion caused by suppression. An analysis is 'lost' if its grouping column was
     dropped from the release, 'coarsened' if it was generalized, else 'available'."""
     kept = original_df[original_df["row_id"].isin(release_df["row_id"])]
+    # Only compare scales that actually exist in the uploaded data.
+    scales = [s for s in scales if s in original_df.columns]
     rows, status = [], {}
     for by in by_list:
         if by not in release_df.columns:
@@ -21,6 +23,11 @@ def utility_report(original_df, release_df, scales, by_list, levels=None):
             status[by] = "coarsened"
         else:
             status[by] = "available"
+        # Skip grouping columns or scale sets we cannot compute for this upload.
+        if by not in original_df.columns or not scales:
+            if by not in original_df.columns:
+                status[by] = "lost"
+            continue
         o = group_means(original_df, scales, by)
         r = group_means(kept, scales, by).reindex(o.index)
         for g in o.index:
@@ -28,11 +35,13 @@ def utility_report(original_df, release_df, scales, by_list, levels=None):
                 rows.append({"by": by, "group": g, "scale": sc,
                              "orig_mean": o.loc[g, sc], "release_mean": r.loc[g, sc],
                              "abs_shift": abs(o.loc[g, sc] - r.loc[g, sc]) if pd.notna(r.loc[g, sc]) else np.nan})
-    table = pd.DataFrame(rows)
+    # Fixed columns so the frame is never column-less even when rows is empty.
+    table = pd.DataFrame(rows, columns=["by", "group", "scale", "orig_mean", "release_mean", "abs_shift"])
+    shift = table["abs_shift"].dropna()
     return {"table": table,
-            "max_abs_shift": float(table["abs_shift"].max()),
-            "mean_abs_shift": float(table["abs_shift"].mean()),
-            "pct_rows_kept": float(len(kept) / len(original_df)),
+            "max_abs_shift": float(shift.max()) if len(shift) else 0.0,
+            "mean_abs_shift": float(shift.mean()) if len(shift) else 0.0,
+            "pct_rows_kept": float(len(kept) / len(original_df)) if len(original_df) else 1.0,
             "analysis_status": status}
 
 _EXCLUDE_PREFIXES = ("SE",)  # SE items would leak the SE target
@@ -72,7 +81,10 @@ def ml_utility(original_df, release_df, transform, target="SE", exclude=(), seed
             "n_train_original": int(len(o_train)), "n_train_release": int(len(r_train))}
 
 def fairness_report(df, suppressed_mask, group_col="affiliation"):
-    t = pd.DataFrame({"group": df[group_col].values, "sup": suppressed_mask.values})
+    # If the grouping column is absent from the upload, treat everyone as one group
+    # instead of raising KeyError.
+    groups = df[group_col].values if group_col in df.columns else np.full(len(df), "all")
+    t = pd.DataFrame({"group": groups, "sup": suppressed_mask.values})
     out = t.groupby("group", dropna=False).agg(n=("sup", "size"), n_suppressed=("sup", "sum")).reset_index()
     out["pct_suppressed"] = out["n_suppressed"] / out["n"]
     return out.sort_values("pct_suppressed", ascending=False)
