@@ -1,4 +1,4 @@
-﻿"""Out-of-sample stress test for presidio_detect.
+"""Out-of-sample stress test for presidio_detect.
 
 20 hand-written sentences that were NOT used for tuning: 10 contain real-looking
 PERSON names (several as the SECOND name in the sentence), 10 contain BU place or

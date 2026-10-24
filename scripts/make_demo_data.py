@@ -1,4 +1,4 @@
-﻿"""Generate a fully synthetic demo dataset so the app can run without BU's
+"""Generate a fully synthetic demo dataset so the app can run without BU's
 access-restricted files.
 
 IMPORTANT: this script fabricates every value with numpy/Faker. It NEVER reads,
@@ -50,7 +50,7 @@ aff = choice(lemurs, p=[0.50, 0.18, 0.10, 0.07, 0.06, 0.05, 0.04])
 # 91 first-major codes 1001..1091; each code maps to a "college" group 21..32.
 maj_codes = np.arange(1001, 1011)                 # 1001..1010 (small, concentrated pool -> realistic risk)
 code_to_col = {c: 21 + (i * 12 // len(maj_codes)) for i, c in enumerate(maj_codes)}  # -> 21..32
-FIELD_NAMES = ["Lantern Studies", "Kite Studies", "Wayfinding", "Tide Mechanics",
+FIELD_NAMES = ["Cloud Survey", "Rope Design", "Compass Arts", "Tide Mechanics",
                "Ember Design", "Cartography", "Beacon Theory", "Harbor Systems",
                "Glasswork", "Foldcraft", "Driftwood Ecology", "Signal Arts"]
 

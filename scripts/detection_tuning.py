@@ -1,4 +1,4 @@
-﻿"""Detection tuning: build planted/truth parquet if missing, then score a
+"""Detection tuning: build planted/truth parquet if missing, then score a
 1,500-comment sample across four settings and save results/detection_tuning.csv.
 
 Settings:
