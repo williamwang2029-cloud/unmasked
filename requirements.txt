@@ -12,6 +12,9 @@ cryptography
 presidio-analyzer
 presidio-anonymizer
 spacy
+kaleido
+ipykernel
+nbformat
 # pick ONE if you use an LLM:
-anthropic
-# openai
+# anthropic
+openai
