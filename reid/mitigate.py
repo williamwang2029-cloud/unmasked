@@ -14,8 +14,18 @@ def load_hierarchies(path="hierarchies.yaml"):
 def _h():
     return _H if _H is not None else load_hierarchies()
 
+# QIs present in an uploaded file but absent from hierarchies.yaml get this default
+# two-level ladder: keep as-is (identity) or drop entirely. This lets the optimizer
+# generalize/drop unmapped identifying columns (e.g. "age", "zip") instead of silently
+# leaving them at full detail. Columns that DO have a hierarchy are unaffected.
+DEFAULT_LADDER = [{"type": "identity"}, {"type": "drop"}]
+
+def _col_hier(col):
+    """Hierarchy ladder for a column: its configured entry, or the default ladder."""
+    return _h().get(col, DEFAULT_LADDER)
+
 def max_level(col):
-    return len(_h()[col]) - 1
+    return len(_col_hier(col)) - 1
 
 def _apply_rule(df, col, rule):
     t = rule["type"]
@@ -48,9 +58,9 @@ def apply_levels(df, levels):
     out = df.copy()
     to_drop = []
     for col, lvl in levels.items():
-        if col not in out.columns or col not in h:
+        if col not in out.columns:
             continue
-        rule = h[col][lvl]
+        rule = _col_hier(col)[lvl]
         if rule["type"] == "drop":
             to_drop.append(col)
         else:
@@ -81,7 +91,7 @@ def _group_supp(df, qis, k, group_col, group_series):
 
 def greedy_generalize(df, qis, k=5, max_suppression=0.05, max_group_suppression=None,
                       group_col="affiliation", protect=(), must_keep=()):
-    qis = [q for q in qis if q in df.columns and q in _h()]
+    qis = [q for q in qis if q in df.columns]  # unmapped QIs get DEFAULT_LADDER via _col_hier
     levels = {q: 0 for q in qis}
     groups = df[group_col] if group_col in df.columns else pd.Series("all", index=df.index)
     steps = []
