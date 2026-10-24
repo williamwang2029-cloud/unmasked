@@ -1,0 +1,17 @@
+{
+  "enabled": true,
+  "name": "Privacy guard",
+  "description": "When a Python file in reid/ or app.py is saved, re-run the release-warning checks and the property-based test suite, and confirm nothing from data/, keys/, or .env is staged for commit. Reports any failure so privacy regressions or accidental sensitive-file staging are caught immediately.",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "reid/**/*.py",
+      "app.py"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "A Python file under reid/ or app.py was just saved. Do all of the following and report a concise PASS/FAIL summary:\n\n1. Run `python scripts/checks/test_release_warnings.py` and report whether it passed.\n2. Run `python -m pytest tests -q` and report the result.\n3. Run `git status --porcelain` and confirm NOTHING staged or modified is under `data/`, `keys/`, or is a `.env` file. If any such path appears, flag it loudly as a privacy risk.\n\nIf any step fails or a sensitive path is staged, clearly say FAIL and show the offending output. Do not modify any files; this is a read-only guard."
+  }
+}
