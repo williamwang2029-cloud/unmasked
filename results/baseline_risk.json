@@ -1,0 +1,38 @@
+{
+  "core9": {
+    "n": 20731,
+    "n_classes": 16221,
+    "k_min": 1,
+    "pct_unique": 0.6779701895711736,
+    "pct_below_k": 0.8986541893782258,
+    "avg_risk": 0.7824514012831026,
+    "max_risk": 1.0
+  },
+  "core8": {
+    "n": 20731,
+    "n_classes": 16221,
+    "k_min": 1,
+    "pct_unique": 0.6779701895711736,
+    "pct_below_k": 0.8986541893782258,
+    "avg_risk": 0.7824514012831026,
+    "max_risk": 1.0
+  },
+  "extended14": {
+    "n": 20731,
+    "n_classes": 17004,
+    "k_min": 1,
+    "pct_unique": 0.738748733780329,
+    "pct_below_k": 0.9085427620471758,
+    "avg_risk": 0.8202209251845063,
+    "max_risk": 1.0
+  },
+  "with_metadata": {
+    "n": 20731,
+    "n_classes": 20730,
+    "k_min": 1,
+    "pct_unique": 0.999903526120303,
+    "pct_below_k": 1.0,
+    "avg_risk": 0.9999517630601514,
+    "max_risk": 1.0
+  }
+}

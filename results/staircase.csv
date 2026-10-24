@@ -1,0 +1,8 @@
+fields,n_fields,n,n_classes,k_min,pct_unique,pct_below_k,avg_risk,max_risk
+Year + Class,2,20731,18,129,0.0,0.0,0.0008682649172736482,0.007751937984496124
+Year + Class + affiliation,3,20731,126,3,0.0,0.00028942163909121603,0.006077854420915537,0.3333333333333333
+Year + Class + affiliation + MAJfirstcode,4,20731,4975,1,0.10250349717813902,0.3298441946842892,0.23997877574646664,1.0
+Year + Class + affiliation + MAJfirstcode + program,5,20731,11343,1,0.3697361439390285,0.734069750615021,0.5471516087019439,1.0
+Year + Class + affiliation + MAJfirstcode + program + MAJsecondcode,6,20731,13209,1,0.4857459842747576,0.7997202257488785,0.6371617384593121,1.0
+Year + Class + program + affiliation + MAJfirstcode + MAJsecondcode + begincol + edaspire,8,20731,16221,1,0.6779701895711736,0.8986541893782258,0.7824514012831026,1.0
+Year + Class + program + FTFY + affiliation + MAJfirstcode + MAJsecondcode + begincol + edaspire + attend_voc + attend_com + attend_col + attend_none + attend_other,14,20731,17004,1,0.738748733780329,0.9085427620471758,0.8202209251845063,1.0
