@@ -62,9 +62,25 @@ def test_empty_no_crash():
     print("d) empty inputs: no crash, no warnings -> PASS")
 
 
+def test_few_fields_no_analyses():
+    # uploaded file: few fields survive but NO grouped analyses defined -> warning
+    # must NOT mention "0 of 0 analyses".
+    considered = [f"f{i}" for i in range(16)]
+    active = ["grad_year", "school"]
+    out = release_warnings(considered, active, {}, 0.0, 0.0)
+    assert len(out["warnings"]) == 1, out["warnings"]
+    w = out["warnings"][0]
+    assert "only 2 of 16 fields survived" in w, w
+    assert "analyses are lost" not in w, w
+    assert "0 of 0" not in w, w
+    assert out["fields_kept"] == "grad_year, school"
+    print("e) few fields, no analyses: warning without analyses text -> PASS")
+
+
 if __name__ == "__main__":
     test_default_ok()
     test_strict_warns()
     test_over_limit_errors()
     test_empty_no_crash()
+    test_few_fields_no_analyses()
     print("OK: all release_warnings tests passed")
