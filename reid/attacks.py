@@ -31,7 +31,29 @@ def persona_risk(df, personas, k=5):
         m = risk_summary(df, fields, k)
         rows.append({"persona": name, "fields": " + ".join(fields),
                      "pct_unique": m["pct_unique"], "pct_below_k": m["pct_below_k"]})
-    return pd.DataFrame(rows)
+    # Always return the same columns, even for an empty persona set, so callers
+    # (e.g. the Streamlit risk tab) never crash referencing a missing column.
+    return pd.DataFrame(rows, columns=["persona", "fields", "pct_unique", "pct_below_k"])
+
+
+def personas_for(df, personas, quasi_ids):
+    """Config personas whose fields all exist in df; if none fit, generic personas
+    built from df's own quasi-identifiers.
+
+    Uploaded (non-NSSE) files don't have the config's NSSE column names, which made
+    the personas empty and produced a misleading 0%->0% attack. This falls back to
+    generic personas drawn from the uploaded file's actual quasi-identifiers.
+    """
+    fit = {p: list(c) for p, c in personas.items() if c and all(x in df.columns for x in c)}
+    if fit:
+        return fit
+    q = [c for c in quasi_ids if c in df.columns]
+    if not q:
+        return {}
+    out = {"everything": q}           # keep the name "everything" so privacy_label picks it up
+    if len(q) > 3:
+        out["knows_3_fields"] = q[:3]
+    return out
 
 
 def linkage_attack(release_df, attacker_df, known_cols, transform=None):
