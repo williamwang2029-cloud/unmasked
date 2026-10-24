@@ -10,6 +10,7 @@ from dotenv import load_dotenv
 from reid import attacks, classify, llm, risk
 from reid.agent import run_agent
 from reid.config import load_config
+from reid.release_warnings import release_warnings
 
 load_dotenv()
 st.set_page_config(page_title="Unmasked: Re-identification Risk Meter", page_icon="🛡️", layout="wide")
@@ -159,6 +160,18 @@ with tabs[3]:
                                scrub_comments=scrub, log=st.write)
             status.update(label="Done", state="complete")
         st.session_state.result = result
+        st.session_state.max_removed = max_sup
+        rw = release_warnings(
+            considered_qis=list(result["mitigation"]["levels"].keys()),
+            active_qis=result["mitigation"]["active_qis"],
+            analysis_status=result["utility"]["analysis_status"],
+            pct_removed=float(result["mitigation"]["suppressed_mask"].mean()),
+            max_removed=max_sup,
+        )
+        for w in rw["warnings"]:
+            st.warning(w)
+        for e in rw["errors"]:
+            st.error(e)
 
 # ---------------- 5. before / after ----------------
 with tabs[4]:
@@ -167,6 +180,17 @@ with tabs[4]:
     if r is None:
         st.info("Run the agent in tab 4.")
     else:
+        rw = release_warnings(
+            considered_qis=list(r["mitigation"]["levels"].keys()),
+            active_qis=r["mitigation"]["active_qis"],
+            analysis_status=r["utility"]["analysis_status"],
+            pct_removed=float(r["mitigation"]["suppressed_mask"].mean()),
+            max_removed=st.session_state.get("max_removed", cfg["targets"]["max_suppression"]),
+        )
+        for w in rw["warnings"]:
+            st.warning(w)
+        for e in rw["errors"]:
+            st.error(e)
         lab = r["label"]
         with st.container(border=True):
             st.subheader("🏷️ Privacy nutrition label")
@@ -203,6 +227,7 @@ with tabs[4]:
             st.subheader("Which analyses still work?")
             st.dataframe(pd.DataFrame([{"analysis by": k2, "status": v} for k2, v in r["utility"]["analysis_status"].items()]),
                          hide_index=True)
+            st.caption(f"Fields kept in the release: {rw['fields_kept']}")
             ms = res_json("mitigation_summary.json")
             mode = "protect_on" if r["protect_small_groups"] else "protect_off"
             if ms and mode in ms:
