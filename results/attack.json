@@ -1,0 +1,277 @@
+{
+  "protect_on": {
+    "classmate": {
+      "before": {
+        "n_targets": 200,
+        "cols_used": [
+          "Year",
+          "Class",
+          "MAJfirstcode"
+        ],
+        "n_unique_match": 3,
+        "n_correct": 3,
+        "unique_match_rate": 0.015,
+        "correct_rate": 0.015
+      },
+      "after": {
+        "n_targets": 200,
+        "cols_used": [
+          "Year"
+        ],
+        "n_unique_match": 0,
+        "n_correct": 0,
+        "unique_match_rate": 0.0,
+        "correct_rate": 0.0
+      }
+    },
+    "club_roster": {
+      "before": {
+        "n_targets": 200,
+        "cols_used": [
+          "Year",
+          "Class",
+          "program",
+          "affiliation"
+        ],
+        "n_unique_match": 3,
+        "n_correct": 3,
+        "unique_match_rate": 0.015,
+        "correct_rate": 0.015
+      },
+      "after": {
+        "n_targets": 200,
+        "cols_used": [
+          "Year",
+          "affiliation"
+        ],
+        "n_unique_match": 0,
+        "n_correct": 0,
+        "unique_match_rate": 0.0,
+        "correct_rate": 0.0
+      }
+    },
+    "linkedin": {
+      "before": {
+        "n_targets": 200,
+        "cols_used": [
+          "Year",
+          "Class",
+          "program",
+          "MAJfirstcode",
+          "MAJsecondcode"
+        ],
+        "n_unique_match": 54,
+        "n_correct": 54,
+        "unique_match_rate": 0.27,
+        "correct_rate": 0.27
+      },
+      "after": {
+        "n_targets": 200,
+        "cols_used": [
+          "Year"
+        ],
+        "n_unique_match": 0,
+        "n_correct": 0,
+        "unique_match_rate": 0.0,
+        "correct_rate": 0.0
+      }
+    },
+    "survey_insider": {
+      "before": {
+        "n_targets": 200,
+        "cols_used": [
+          "logdate",
+          "Class",
+          "affiliation"
+        ],
+        "n_unique_match": 48,
+        "n_correct": 48,
+        "unique_match_rate": 0.24,
+        "correct_rate": 0.24
+      },
+      "after": {
+        "n_targets": 200,
+        "cols_used": [
+          "logdate",
+          "affiliation"
+        ],
+        "n_unique_match": 0,
+        "n_correct": 0,
+        "unique_match_rate": 0.0,
+        "correct_rate": 0.0
+      }
+    },
+    "everything": {
+      "before": {
+        "n_targets": 200,
+        "cols_used": [
+          "Year",
+          "Class",
+          "program",
+          "FTFY",
+          "affiliation",
+          "MAJfirstcode",
+          "MAJsecondcode",
+          "begincol",
+          "edaspire"
+        ],
+        "n_unique_match": 137,
+        "n_correct": 137,
+        "unique_match_rate": 0.685,
+        "correct_rate": 0.685
+      },
+      "after": {
+        "n_targets": 200,
+        "cols_used": [
+          "Year",
+          "FTFY",
+          "affiliation"
+        ],
+        "n_unique_match": 0,
+        "n_correct": 0,
+        "unique_match_rate": 0.0,
+        "correct_rate": 0.0
+      }
+    }
+  },
+  "protect_off": {
+    "classmate": {
+      "before": {
+        "n_targets": 200,
+        "cols_used": [
+          "Year",
+          "Class",
+          "MAJfirstcode"
+        ],
+        "n_unique_match": 3,
+        "n_correct": 3,
+        "unique_match_rate": 0.015,
+        "correct_rate": 0.015
+      },
+      "after": {
+        "n_targets": 200,
+        "cols_used": [
+          "Year",
+          "Class"
+        ],
+        "n_unique_match": 0,
+        "n_correct": 0,
+        "unique_match_rate": 0.0,
+        "correct_rate": 0.0
+      }
+    },
+    "club_roster": {
+      "before": {
+        "n_targets": 200,
+        "cols_used": [
+          "Year",
+          "Class",
+          "program",
+          "affiliation"
+        ],
+        "n_unique_match": 3,
+        "n_correct": 3,
+        "unique_match_rate": 0.015,
+        "correct_rate": 0.015
+      },
+      "after": {
+        "n_targets": 200,
+        "cols_used": [
+          "Year",
+          "Class",
+          "program"
+        ],
+        "n_unique_match": 0,
+        "n_correct": 0,
+        "unique_match_rate": 0.0,
+        "correct_rate": 0.0
+      }
+    },
+    "linkedin": {
+      "before": {
+        "n_targets": 200,
+        "cols_used": [
+          "Year",
+          "Class",
+          "program",
+          "MAJfirstcode",
+          "MAJsecondcode"
+        ],
+        "n_unique_match": 54,
+        "n_correct": 54,
+        "unique_match_rate": 0.27,
+        "correct_rate": 0.27
+      },
+      "after": {
+        "n_targets": 200,
+        "cols_used": [
+          "Year",
+          "Class",
+          "program"
+        ],
+        "n_unique_match": 0,
+        "n_correct": 0,
+        "unique_match_rate": 0.0,
+        "correct_rate": 0.0
+      }
+    },
+    "survey_insider": {
+      "before": {
+        "n_targets": 200,
+        "cols_used": [
+          "logdate",
+          "Class",
+          "affiliation"
+        ],
+        "n_unique_match": 48,
+        "n_correct": 48,
+        "unique_match_rate": 0.24,
+        "correct_rate": 0.24
+      },
+      "after": {
+        "n_targets": 200,
+        "cols_used": [
+          "logdate",
+          "Class"
+        ],
+        "n_unique_match": 0,
+        "n_correct": 0,
+        "unique_match_rate": 0.0,
+        "correct_rate": 0.0
+      }
+    },
+    "everything": {
+      "before": {
+        "n_targets": 200,
+        "cols_used": [
+          "Year",
+          "Class",
+          "program",
+          "FTFY",
+          "affiliation",
+          "MAJfirstcode",
+          "MAJsecondcode",
+          "begincol",
+          "edaspire"
+        ],
+        "n_unique_match": 137,
+        "n_correct": 137,
+        "unique_match_rate": 0.685,
+        "correct_rate": 0.685
+      },
+      "after": {
+        "n_targets": 200,
+        "cols_used": [
+          "Year",
+          "Class",
+          "program",
+          "FTFY"
+        ],
+        "n_unique_match": 0,
+        "n_correct": 0,
+        "unique_match_rate": 0.0,
+        "correct_rate": 0.0
+      }
+    }
+  }
+}

@@ -1,0 +1,6 @@
+entity_type,tp,fp,fn,precision,recall,f1,method
+PERSON,212,0,21,1.0,0.9098712446351931,0.952808988764045,presidio
+EMAIL_ADDRESS,152,0,0,1.0,1.0,1.0,presidio
+PHONE_NUMBER,151,0,0,1.0,1.0,1.0,presidio
+BU_ID,75,0,0,1.0,1.0,1.0,presidio
+ALL,590,0,21,1.0,0.9656301145662848,0.9825145711906744,presidio

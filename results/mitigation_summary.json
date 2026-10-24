@@ -1,0 +1,96 @@
+{
+  "protect_on": {
+    "levels": {
+      "Year": 0,
+      "Class": 1,
+      "program": 2,
+      "FTFY": 0,
+      "affiliation": 0,
+      "MAJfirstcode": 2,
+      "MAJsecondcode": 3,
+      "begincol": 1,
+      "edaspire": 2,
+      "attend_voc": 0,
+      "attend_com": 0,
+      "attend_col": 0,
+      "attend_none": 1,
+      "attend_other": 0,
+      "logdate": 2,
+      "duration": 2
+    },
+    "pct_suppressed": 0.02503497178139019,
+    "final_risk": {
+      "n": 20212,
+      "n_classes": 312,
+      "k_min": 5,
+      "pct_unique": 0.0,
+      "pct_below_k": 0.0,
+      "avg_risk": 0.015436374431031071,
+      "max_risk": 0.2
+    },
+    "max_abs_shift": 0.48780007870916364,
+    "mean_abs_shift": 0.07135581175817683,
+    "analysis_status": {
+      "Class": "lost",
+      "affiliation": "available",
+      "MAJfirstcol": "lost",
+      "Year": "available"
+    },
+    "ml": {
+      "target": "SE",
+      "mae_original": 8.240847542224241,
+      "mae_release": 8.649937510061278,
+      "r2_original": 0.41904693071067656,
+      "r2_release": 0.3668401283933783,
+      "n_train_original": 14473,
+      "n_train_release": 14063
+    }
+  },
+  "protect_off": {
+    "levels": {
+      "Year": 0,
+      "Class": 0,
+      "program": 0,
+      "FTFY": 0,
+      "affiliation": 2,
+      "MAJfirstcode": 2,
+      "MAJsecondcode": 3,
+      "begincol": 1,
+      "edaspire": 2,
+      "attend_voc": 0,
+      "attend_com": 0,
+      "attend_col": 0,
+      "attend_none": 1,
+      "attend_other": 0,
+      "logdate": 2,
+      "duration": 2
+    },
+    "pct_suppressed": 0.03535767690897689,
+    "final_risk": {
+      "n": 19998,
+      "n_classes": 408,
+      "k_min": 5,
+      "pct_unique": 0.0,
+      "pct_below_k": 0.0,
+      "avg_risk": 0.0204020402040204,
+      "max_risk": 0.2
+    },
+    "max_abs_shift": 0.594891213758963,
+    "mean_abs_shift": 0.09093394376724971,
+    "analysis_status": {
+      "Class": "available",
+      "affiliation": "lost",
+      "MAJfirstcol": "lost",
+      "Year": "available"
+    },
+    "ml": {
+      "target": "SE",
+      "mae_original": 8.240847542224241,
+      "mae_release": 8.306861093566102,
+      "r2_original": 0.41904693071067656,
+      "r2_release": 0.4081190078115271,
+      "n_train_original": 14473,
+      "n_train_release": 13945
+    }
+  }
+}

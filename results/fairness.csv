@@ -1,0 +1,15 @@
+group,n,n_suppressed,pct_suppressed,setting
+Diademed sifaka,1146,79,0.06893542757417102,protect_on
+Gray mouse lemur,864,59,0.06828703703703703,protect_on
+Crowned lemur,1208,79,0.06539735099337748,protect_on
+Golden bamboo lemur,1279,76,0.05942142298670837,protect_on
+Aye-aye,1980,71,0.03585858585858586,protect_on
+Indri,3794,66,0.01739588824459673,protect_on
+Ring-tailed lemur,10460,89,0.008508604206500956,protect_on
+Diademed sifaka,1146,56,0.04886561954624782,protect_off
+Golden bamboo lemur,1279,57,0.044566067240031274,protect_off
+Gray mouse lemur,864,34,0.03935185185185185,protect_off
+Crowned lemur,1208,47,0.03890728476821192,protect_off
+Ring-tailed lemur,10460,365,0.03489483747609943,protect_off
+Aye-aye,1980,60,0.030303030303030304,protect_off
+Indri,3794,114,0.030047443331576173,protect_off
