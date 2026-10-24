@@ -1,0 +1,32 @@
+data:
+  raw_xlsx: data/NSSE-synthetic.xlsx
+  lookup_xlsx: data/lookup-synthetic.xlsx
+  clean_parquet: data/nsse_clean.parquet
+  planted_parquet: data/nsse_planted.parquet
+  truth_parquet: data/pii_truth.parquet
+roles:
+  direct_ids: [ID]
+  quasi_ids: [Year, Class, program, FTFY, affiliation, MAJfirstcode, MAJsecondcode, begincol, edaspire]
+  quasi_ids_extended: [attend_voc, attend_com, attend_col, attend_none, attend_other]
+  metadata: [logdate, duration]
+  derived_major: [MAJnum, MAJfirst, MAJsecond, MAJfirstcol, MAJsecondcol]
+  sensitive_scales: [HO, RI, LS, QR, CL, DD, SF, ET, QI, SE]
+  group_col: affiliation
+  planted: [full_name, email, student_id, comment]
+targets:
+  k: 5
+  max_suppression: 0.05
+  max_group_suppression: 0.10
+utility_analyses:
+  scales: [HO, SF, QI, SE]
+  by: [Class, affiliation, MAJfirstcol, Year]
+personas:
+  classmate: [Year, Class, MAJfirstcode]
+  club_roster: [Year, Class, program, affiliation]
+  linkedin: [Year, Class, program, MAJfirstcode, MAJsecondcode]
+  survey_insider: [logdate, Class, affiliation]
+  everything: [Year, Class, program, FTFY, affiliation, MAJfirstcode, MAJsecondcode, begincol, edaspire]
+attack:
+  n_targets: 200
+  seed: 42
+seed: 42
