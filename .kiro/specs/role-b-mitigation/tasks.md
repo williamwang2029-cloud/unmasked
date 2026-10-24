@@ -46,7 +46,7 @@ acceptance checks are blocked until it exists (or a minimal local stub of `class
     - Depends on a clean df carrying `row_id` from `reid/load.py` (A) or, as fallback, `load_raw`.
     - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 8.1, 9.1_
 
-  - [ ]* 1.2 Write property test for plant span integrity
+  - [x]* 1.2 Write property test for plant span integrity
     - **Property 1: Span integrity (plant)** — for every truth row,
       `planted_df.loc[row_id, "comment"][start:end] == value`.
     - **Validates: Requirements 1.6**
@@ -87,12 +87,12 @@ acceptance checks are blocked until it exists (or a minimal local stub of `class
       distinct-value count; reaching `max_level` removes the column.
     - **Validates: Requirements 3.2, 3.5**
 
-  - [ ]* 2.4 Write property test for lockstep derived drop
+  - [x]* 2.4 Write property test for lockstep derived drop
     - **Property 5: Lockstep derived drop** — when a source code column reaches the listed level,
       its derived columns are absent from `apply_levels` output.
     - **Validates: Requirements 3.3**
 
-  - [ ]* 2.5 Write property test for suppression completeness
+  - [x]* 2.5 Write property test for suppression completeness
     - **Property 6: Suppression completeness** — after `suppress(df, qis, k)`, every equivalence
       class over present `qis` has size ≥ k.
     - **Validates: Requirements 3.6**
@@ -116,7 +116,7 @@ acceptance checks are blocked until it exists (or a minimal local stub of `class
       `KeyError("token not found")`.
     - _Requirements: 4.1, 4.2, 4.3, 4.5, 4.7, 4.8, 8.1, 9.3, 9.4_
 
-  - [ ]* 3.2 Write property test for token determinism and round trip
+  - [x]* 3.2 Write property test for token determinism and round trip
     - **Property 2: Token determinism** — equal inputs yield equal tokens under the same key.
     - **Property 3: Reversibility** — `detokenize(tokenize_column(df, col).iloc[i][col], col) == str(df.iloc[i][col])`.
     - **Validates: Requirements 4.3, 4.4, 4.6**
