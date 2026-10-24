@@ -16,10 +16,12 @@ from reid.risk import risk_summary
 
 
 def make_attacker_table(original_df, known_cols, n=200, seed=42):
-    """Sample n target students and return row_id plus the raw columns the
-    attacker is assumed to know."""
+    """Sample up to n target students and return row_id plus the raw columns the
+    attacker is assumed to know. Caps the sample at len(original_df) so small
+    uploads (fewer than n rows) do not crash."""
     cols = [c for c in known_cols if c in original_df.columns]
-    return original_df.sample(n=n, random_state=seed)[["row_id"] + cols].reset_index(drop=True)
+    sample_n = min(n, len(original_df))
+    return original_df.sample(n=sample_n, random_state=seed)[["row_id"] + cols].reset_index(drop=True)
 
 
 def persona_risk(df, personas, k=5):
