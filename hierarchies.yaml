@@ -1,0 +1,71 @@
+# Generalization hierarchies. Level 0 = original. The last level of every column is "drop".
+Year:
+  - {type: identity}
+  - {type: map, map: {2014: "2014-16", 2016: "2014-16", 2018: "2018-20", 2020: "2018-20", 2022: "2022-24", 2024: "2022-24"}}
+  - {type: drop}
+Class:
+  - {type: identity}
+  - {type: drop}
+program:
+  - {type: identity}
+  - {type: map_other, keep: [CLF, LAG, VAN, HIG, TSI], other: OTHER}
+  - {type: drop}
+FTFY:
+  - {type: identity}
+  - {type: drop}
+affiliation:
+  - {type: identity}
+  - {type: map_other, keep: [Ring-tailed lemur, Indri, Aye-aye], other: Other lemur}
+  - {type: drop}
+MAJfirstcode:
+  - {type: identity}
+  - {type: from_column, source: MAJfirstcol}
+  - {type: drop}
+MAJsecondcode:
+  - {type: identity}
+  - {type: from_column, source: MAJsecondcol}
+  - {type: has_value, none_values: [-9], label_yes: has_second, label_no: no_second}
+  - {type: drop}
+begincol:
+  - {type: identity}
+  - {type: drop}
+edaspire:
+  - {type: identity}
+  - {type: map, map: {1: low, 2: low, 3: high, 4: high}}
+  - {type: drop}
+logdate:
+  - {type: identity}
+  - {type: month}
+  - {type: year}
+  - {type: drop}
+duration:
+  - {type: identity}
+  - {type: bins, edges: [0, 5, 15, 30, 1000000000], labels: ["<5", "5-15", "15-30", "30+"]}
+  - {type: drop}
+
+attend_voc:
+  - {type: identity}
+  - {type: drop}
+attend_com:
+  - {type: identity}
+  - {type: drop}
+attend_col:
+  - {type: identity}
+  - {type: drop}
+attend_none:
+  - {type: identity}
+  - {type: drop}
+attend_other:
+  - {type: identity}
+  - {type: drop}
+
+# Derived columns that must follow their source column's level.
+# For each source: list of [min_level_of_source, derived_column_to_drop]
+derived:
+  MAJfirstcode:
+    - [1, MAJfirst]
+    - [2, MAJfirstcol]
+  MAJsecondcode:
+    - [1, MAJsecond]
+    - [2, MAJsecondcol]
+    - [3, MAJnum]
