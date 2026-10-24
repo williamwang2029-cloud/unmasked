@@ -212,11 +212,11 @@ Troubleshooting: run `python scripts/check_llm.py` to make one live test call. I
 you can tell a key/model problem apart from a connection problem.
 
 ## Team
-- **KieranM** (Role A) — risk engine and attacks: data loading, k-anonymity/uniqueness, riskiest-combination
+- **Kieran McBride** (Role A) — risk engine and attacks: data loading, k-anonymity/uniqueness, riskiest-combination
   search, attacker personas, and the simulated linkage attack.
-- **KealohaK** (Role B) — mitigation and evaluation: PII planting, Presidio text scrubbing, HMAC tokenization
+- **Kealoha Comcowich** (Role B) — mitigation and evaluation: PII planting, Presidio text scrubbing, HMAC tokenization
   with an encrypted vault, the generalization/suppression optimizer, and the utility and fairness measures.
-- **WilliamW** (Role C) — agent and app: the privacy agent orchestration, the metadata-only LLM wrapper and
+- **William Wang** (Role C) — agent and app: the privacy agent orchestration, the metadata-only LLM wrapper and
   column classifier, and the six-tab Streamlit app.
 
 ## Credits
