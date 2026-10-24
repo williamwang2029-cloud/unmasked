@@ -30,8 +30,13 @@ without an LLM.
 Streamlit + Plotly, Kiro (spec-driven development), Gemini via an OpenAI-compatible endpoint.
 
 **Links:**
-- GitHub: GITHUB_URL
+- GitHub: https://github.com/williamwang2029-cloud/unmasked
+- Live demo: https://unmasked.streamlit.app
 - Video: VIDEO_URL
+
+## Kiro write-up (for the Sundai form)
+
+We built Unmasked in the Kiro IDE using its spec-driven workflow. We split the project into three specs (role-a-risk-engine, role-b-mitigation, role-c-agent-app), each owning its own files and treating the others as fixed interface contracts, so three people built in parallel and merged with zero code conflicts. Requirements used EARS notation with acceptance criteria pinning exact reference numbers, and every spec task ended in an acceptance check that had to reproduce them (67.8% unique, 68.5% attack success, 2.50% removed, R2 0.42 to 0.37). Role B used Kiro's design-first workflow. Three steering files enforced file ownership, data conventions, and the rule that the LLM never sees student rows. We added Hypothesis property-based tests for the core privacy guarantees and a Privacy guard agent hook that re-runs the checks whenever core code is saved. We used Kiro's chat for exploratory work (detector tuning, data debugging, Git fixes). We did not use the Kiro CLI, Web, Crew, MCP, or powers. Full details: KIRO.md.
 
 ---
 
