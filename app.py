@@ -89,11 +89,13 @@ is_bu = src == BU_OPTION
 
 if src == BU_OPTION:
     df = load_builtin()
+    data_key = src
 elif src == DEMO_OPTION:
     if not DEMO_CSV.exists():
         st.error("Demo data not found. Run: python scripts/make_demo_data.py")
         st.stop()
     df = load_demo()
+    data_key = src
     st.info("Using generated demo data: fully fake, same columns as the BU survey. The BU dataset isn't "
             "included in this repo. See the README.")
 else:
@@ -102,6 +104,15 @@ else:
         st.info("Upload a file, or switch to the demo dataset.")
         st.stop()
     df = read_upload(up)
+    data_key = f"{src}|{up.name}|{up.size}"
+
+# When the dataset changes, clear roles/results so the new file is reclassified and old
+# results (tabs 5-6) don't leak across datasets.
+if st.session_state.get("data_key") != data_key:
+    for _k in ("roles", "profile", "result", "max_removed", "run_llm_mode", "run_llm_model"):
+        st.session_state.pop(_k, None)
+    st.session_state.data_key = data_key
+
 st.sidebar.write(f"**{len(df):,} rows × {df.shape[1] - 1} columns**")
 
 _mode, _model = llm_mode()
@@ -248,6 +259,10 @@ with tabs[3]:
     else:
         st.caption("The agent will run in rule-based mode (no LLM).")
     if st.button("🤖 Run privacy agent", type="primary"):
+        unlabeled = [c for c in df.columns if c != "row_id" and c not in roles]
+        if unlabeled:
+            st.error("Some columns have no privacy role yet. Open tab 2 and click Classify columns.")
+            st.stop()
         with st.status("Agent working…", expanded=True) as status:
             result = run_agent(df, roles, target_k=target_k, max_suppression=max_sup, protect_small_groups=protect,
                                group_col=cfg["roles"]["group_col"],

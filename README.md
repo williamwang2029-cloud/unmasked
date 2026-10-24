@@ -137,7 +137,7 @@ Requires **Python 3.11 or 3.12** (some dependencies don't support 3.14 yet).
 ```powershell
 git clone https://github.com/williamwang2029-cloud/unmasked.git
 cd unmasked
-py -3.12 -m venv .venv
+py -3.12 -m venv .venv      # or: py -3.11 -m venv .venv (check with: py -0p)
 .\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 python -m spacy download en_core_web_sm
