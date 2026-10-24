@@ -1,0 +1,36 @@
+{
+  "pbtResults": {},
+  "executionHistory": {
+    "1.1 Write `reid/plant.py` transcribing the reference implementation from design.md": [
+      {
+        "executionId": "75a236dd-b2a0-4ab0-b7f3-8dba73f28f73",
+        "chatSessionId": "sess_cc2e3188-d053-41b7-9c80-a06962a24c21",
+        "timestamp": 1792864077179
+      },
+      {
+        "executionId": "75a236dd-b2a0-4ab0-b7f3-8dba73f28f73",
+        "chatSessionId": "sess_cc2e3188-d053-41b7-9c80-a06962a24c21",
+        "timestamp": 1792864164904
+      }
+    ],
+    "1.4 Acceptance check: run plant on the clean data (B2 Task B2)": [
+      {
+        "executionId": "75a236dd-b2a0-4ab0-b7f3-8dba73f28f73",
+        "chatSessionId": "sess_cc2e3188-d053-41b7-9c80-a06962a24c21",
+        "timestamp": 1792864171097
+      },
+      {
+        "executionId": "75a236dd-b2a0-4ab0-b7f3-8dba73f28f73",
+        "chatSessionId": "sess_cc2e3188-d053-41b7-9c80-a06962a24c21",
+        "timestamp": 1792864287032
+      }
+    ],
+    "1. Recreate `reid/plant.py` (planted identifiers + ground truth)": [
+      {
+        "executionId": "75a236dd-b2a0-4ab0-b7f3-8dba73f28f73",
+        "chatSessionId": "sess_cc2e3188-d053-41b7-9c80-a06962a24c21",
+        "timestamp": 1792864287111
+      }
+    ]
+  }
+}
