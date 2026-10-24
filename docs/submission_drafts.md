@@ -15,14 +15,14 @@ Removing names isn't anonymity: Unmasked measures, fixes, and explains re-identi
 
 **Description (~150 words):**
 "De-identified" student data often isn't. In BU's synthetic NSSE survey file, 67.8% of students are unique on
-just eight ordinary fields, 73.9% on fourteen, and nearly 100% once survey timing is added. Unmasked is an
+just eight ordinary fields, 73.9% on fourteen, and 99.99% on all 14 fields plus survey timing. Unmasked is an
 AI-agent pipeline that labels each column's privacy role from metadata only, measures k-anonymity, uniqueness,
 and attacker-persona risk, then runs a simulated linkage attack: an attacker knowing all nine core fields
 re-identifies 68.5% of targets. The agent tokenizes IDs into an encrypted vault, scrubs free text with Presidio,
-and generalizes and suppresses fields until every group has at least five students, dropping attack success to
-0% while removing only 2.5% of records. It then measures what the fix costs: ML utility falls modestly (R² 0.42
-to 0.37), and the smallest demographic group loses about 8x more records than the largest. Built with Kiro's
-spec-driven workflow; the LLM (Gemini) only ever sees metadata.
+and generalizes and suppresses fields until every group has at least five students, dropping attack success from
+68.5% to 0% while removing only 2.5% of records. It then measures what the fix costs: ML utility falls modestly
+(R² 0.42 to 0.37), and the smallest demographic group loses about 8x more records than the largest. Built with
+Kiro; the LLM sees only column metadata and computed metrics (never student rows).
 
 **Tech used:** Python, pandas, scikit-learn, Microsoft Presidio + spaCy, Faker, cryptography (HMAC + Fernet),
 Streamlit + Plotly, Kiro (spec-driven development), Gemini via an OpenAI-compatible endpoint.
@@ -37,8 +37,9 @@ Streamlit + Plotly, Kiro (spec-driven development), Gemini via an OpenAI-compati
 
 **Inspiration**
 BU wants students to build on institutional data, but "de-identified" files can still expose individuals. In BU's
-synthetic survey data, 67.8% of students are unique on eight ordinary fields and nearly 100% once survey timing
-is included. Removing names clearly isn't enough.
+synthetic survey data, 67.8% of students are unique on eight ordinary fields, and 99.99% on all 14 fields plus
+survey timing (the survey date alone makes 11.7% unique, duration alone 11.6%). Removing names clearly isn't
+enough.
 
 **What it does**
 1. An AI agent labels each column's privacy role using metadata only.
@@ -53,17 +54,22 @@ is included. Removing names clearly isn't enough.
 
 **How we built it**
 Python, pandas, scikit-learn, Microsoft Presidio + spaCy, Faker, cryptography (HMAC + Fernet), Streamlit + Plotly,
-and an LLM agent (Gemini through an OpenAI-compatible endpoint) that only ever sees column metadata and computed
-metrics. Built with Kiro's spec-driven workflow: three specs (role-a-risk-engine, role-b-mitigation,
-role-c-agent-app) and shared steering files let three people build in parallel against fixed interface contracts.
+and an LLM agent (Gemini, supported through an OpenAI-compatible endpoint) that sees only column metadata and
+computed metrics, never student rows (the one exception is an optional detection test on fully synthetic planted
+comments). Built with Kiro: three specs (role-a-risk-engine, role-b-mitigation, role-c-agent-app) and shared
+steering files let three people build in parallel against fixed interface contracts. Roles A and B built their
+modules spec-first; Role C's spec documents its agent and app, with Kiro used for the Gemini integration, a
+release-warning feature, drafting, merges, and troubleshooting.
 
 **Challenges**
 Steep privacy-utility tradeoffs, keeping derived columns consistent through generalization, never sending row
 data to the LLM, and coordinating three branches in a repo that lived inside OneDrive (which fought git).
 
 **Accomplishments**
-Linkage-attack success from 68.5% to 0% with only 2.5% of records removed, PII detection at 1.00 precision/recall
-on structured identifiers, and a fairness finding: the smallest group loses about 8x more records than the largest.
+Linkage-attack success from 68.5% to 0% with only 2.5% of records removed; PII detection at 1.00
+precision/recall on structured identifiers (emails, phones, IDs) on our planted test data, with names at 1.00
+precision / 0.91 recall (0.90 / 0.90 on an out-of-sample stress test); and a fairness finding: the smallest
+group loses about 8x more records than the largest.
 
 **What we learned**
 Privacy protection costs small groups the most, and an unconstrained optimizer can hide that by deleting the
@@ -132,7 +138,7 @@ Split: A (hook + risk), C (demo), B (evidence + insight). Rehearse with a timer 
 | Time | Screen | Narration |
 |---|---|---|
 | 0:00-0:15 | Tab 1 | "This BU survey file has no names. Is it anonymous? Using just eight ordinary fields, 68% of students can be singled out." |
-| 0:15-0:30 | Tab 3 staircase + heatmap | "Each field you add makes more students unique. Even the survey's completion date alone identifies 12%." |
+| 0:15-0:30 | Tab 3 staircase + heatmap | "Each field you add makes more students unique. Even the survey's completion date alone singles out about 12% (11.7%)." |
 | 0:30-0:45 | Tab 2 roles | "Our AI agent labels every column's privacy role using only column metadata." |
 | 0:45-1:10 | Tab 4 live log | "It tokenizes IDs into an encrypted vault, removes names and emails, then coarsens fields until every group has at least five students." |
 | 1:10-1:30 | Tab 5 attack + label | "We attack our own release: 68% re-identified before, zero after, with only 2.5% of records removed." |

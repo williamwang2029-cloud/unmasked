@@ -1,7 +1,7 @@
 # Unmasked: Re-identification Risk Meter
 
 > No names, no IDs, and still 68% of students can be singled out from eight ordinary survey fields
-> (74% once prior-attendance flags are added, and virtually 100% once survey timing is included).
+> (74% once prior-attendance flags are added, and 99.99% from all 14 fields plus survey timing).
 > Unmasked finds that risk, fixes it, and shows what the fix costs, and who pays for it.
 
 Built at BU Spark! DS+X × Hackachusetts 2026 for BU IS&T's Data Scrubbing / Tokenization challenge.
@@ -32,10 +32,13 @@ identify a student with reasonable certainty, and ordinary survey fields clear t
 |---|---|---|
 | Uniquely identifiable (8 ordinary fields) | 67.8% | 0% |
 | Uniquely identifiable (14 fields) | 73.9% | 0% |
-| Uniquely identifiable (including survey timing) | ~100% | 0% |
+| Uniquely identifiable (all 14 fields + survey timing) | 99.99% | 0% |
 | Linkage attack success (attacker knows all 9 core fields, 200 targets) | 68.5% | 0% |
 | Records removed | – | 2.5% |
 | ML utility, predicting engagement score (R²) | 0.42 | 0.37 |
+
+Survey timing is a strong but not standalone identifier: the survey date alone makes 11.7% of students unique
+and the response duration alone 11.6%; combined with all 14 fields, uniqueness reaches 99.99%.
 
 Smallest group size after mitigation is k = 5 (every combination of quasi-identifiers is shared by at least
 five students). Without protecting small groups, the optimizer instead removes 3.5% of records and coarsens the
@@ -48,7 +51,8 @@ cost: the most-affected group loses about 6.9% of its records versus about 0.85%
 an 8× gap. The tool measures and surfaces this rather than hiding it.
 
 ## PII detection on planted ground truth
-Held-out planted sample (`results/detection.csv`, Presidio + spaCy `en_core_web_sm`):
+Held-out planted sample (`results/detection.csv`, Presidio + spaCy `en_core_web_sm`). Emails, phones, and BU
+IDs reach 1.00 precision and recall **on our planted test data**; names are harder:
 
 | Entity | Precision | Recall |
 |---|---|---|
@@ -68,9 +72,10 @@ Synthetic NSSE-style survey data provided by BU IS&T (not included in this repo)
 comments were planted with Faker for testing and are entirely fake. No real student data is used anywhere.
 
 ## Responsible AI and ethics
-- The LLM (Gemini via an OpenAI-compatible endpoint) only ever sees column metadata and computed metrics,
-  never student rows. The whole pipeline runs without an LLM too (rule-based fallback), so the data science
-  stands on its own.
+- The LLM sees only column metadata and computed metrics, never student rows. The one exception is an optional
+  detection test that sends fully synthetic planted comments. Gemini is supported through an OpenAI-compatible
+  endpoint; the whole pipeline also runs without any LLM (rule-based fallback), so the data science stands on
+  its own.
 - Keys and token vaults are stored separately and never committed. Tokenized data is pseudonymous, not
   anonymous: whoever holds the vault key can re-link it.
 - We measure who loses data (fairness) and let data owners protect small demographic groups.
@@ -81,22 +86,26 @@ comments were planted with Faker for testing and are entirely fake. No real stud
   people.
 
 ## Built with Kiro
-We used Kiro's spec-driven workflow, splitting the project into three specs so three people could build in
-parallel against shared interface contracts. Specs live in `.kiro/specs/`, team-wide rules in `.kiro/steering/`.
+We split the project into three specs so three people could build in parallel against shared interface
+contracts. Specs live in `.kiro/specs/`, team-wide rules in `.kiro/steering/`.
 
 - **`.kiro/specs/role-a-risk-engine`** (Role A): data loading and the risk engine, k-anonymity / uniqueness /
   riskiest-combination search, attacker personas, and the simulated linkage attack (`reid/load.py`,
-  `reid/risk.py`, `reid/attacks.py`).
+  `reid/risk.py`, `reid/attacks.py`). Built through spec-driven development, with Kiro also used for acceptance
+  checks, debugging, data comparisons, and merges.
 - **`.kiro/specs/role-b-mitigation`** (Role B): PII planting, Presidio text scrubbing, HMAC tokenization with an
   encrypted vault, the generalization/suppression optimizer, and the utility and fairness measures
-  (`reid/plant.py`, `reid/pii_text.py`, `reid/tokens.py`, `reid/mitigate.py`, `reid/utility.py`).
+  (`reid/plant.py`, `reid/pii_text.py`, `reid/tokens.py`, `reid/mitigate.py`, `reid/utility.py`). Also built
+  spec-first, with Kiro used for acceptance checks, debugging, data comparisons, and merges.
 - **`.kiro/specs/role-c-agent-app`** (Role C): the AI agent that orchestrates measure → plan → act → verify →
   report, the metadata-only LLM wrapper and column classifier, and the six-tab Streamlit app
-  (`reid/agent.py`, `reid/llm.py`, `reid/classify.py`, `app.py`).
+  (`reid/agent.py`, `reid/llm.py`, `reid/classify.py`, `app.py`). Here the spec documents the agent and app
+  rather than generating them; Kiro was used for the Gemini integration, the LLM diagnostic script, the
+  release-warning feature, README and submission drafting, merges, and troubleshooting.
 
-Steering files (`product.md`, `structure.md`, `tech.md`) kept everyone to the same file ownership, naming
-conventions, and safety rules (for example: never send rows to the LLM; never commit data or keys). Kiro drafted
-each spec's requirements, design, and task list, then generated and iterated on the implementation against them.
+Shared steering files (`.kiro/steering/product.md`, `structure.md`, `tech.md`) kept everyone to the same file
+ownership, naming conventions, and safety rules (for example: never send rows to the LLM; never commit data or
+keys).
 
 ## Run it
 ```bash
@@ -113,7 +122,8 @@ streamlit run app.py
 ### LLM (optional)
 
 The app runs fully without an LLM (rule-based fallback). With a key, the agent writes nicer plans, reports,
-and role explanations. The LLM only ever sees column metadata and computed metrics, never student rows.
+and role explanations. The LLM sees only column metadata and computed metrics, never student rows (the one
+exception is an optional detection test that sends fully synthetic planted comments).
 
 Set these in `.env` (copied from `.env.example`, never committed). You can use Anthropic, OpenAI, or any
 OpenAI-compatible endpoint. Google's Gemini is free via AI Studio and works through the OpenAI-compatible
