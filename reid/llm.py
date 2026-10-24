@@ -28,7 +28,10 @@ def complete(prompt, system=None, json_mode=False, max_tokens=800):
             return "".join(b.text for b in msg.content if getattr(b, "type", "") == "text")
         if provider == "openai":
             from openai import OpenAI
-            client = OpenAI()  # reads OPENAI_API_KEY
+            # reads OPENAI_API_KEY; OPENAI_BASE_URL lets you point at an
+            # OpenAI-compatible endpoint (e.g. Gemini via AI Studio).
+            base_url = os.getenv("OPENAI_BASE_URL")
+            client = OpenAI(base_url=base_url) if base_url else OpenAI()
             messages = ([{"role": "system", "content": system}] if system else []) + \
                        [{"role": "user", "content": prompt}]
             r = client.chat.completions.create(model=model, messages=messages, max_tokens=max_tokens)
