@@ -1,0 +1,21 @@
+setting,entity_type,tp,fp,fn,precision,recall,f1
+"threshold 0.4, no deny-list (original)",PERSON,197,44,8,0.8174273858921162,0.9609756097560975,0.8834080717488789
+"threshold 0.4, no deny-list (original)",EMAIL_ADDRESS,168,0,0,1.0,1.0,1.0
+"threshold 0.4, no deny-list (original)",PHONE_NUMBER,153,0,0,1.0,1.0,1.0
+"threshold 0.4, no deny-list (original)",BU_ID,69,0,0,1.0,1.0,1.0
+"threshold 0.4, no deny-list (original)",ALL,587,44,8,0.93026941362916,0.9865546218487395,0.9575856443719413
+"threshold 0.4, with deny-list",PERSON,197,34,8,0.8528138528138528,0.9609756097560975,0.9036697247706422
+"threshold 0.4, with deny-list",EMAIL_ADDRESS,168,0,0,1.0,1.0,1.0
+"threshold 0.4, with deny-list",PHONE_NUMBER,153,0,0,1.0,1.0,1.0
+"threshold 0.4, with deny-list",BU_ID,69,0,0,1.0,1.0,1.0
+"threshold 0.4, with deny-list",ALL,587,34,8,0.9452495974235104,0.9865546218487395,0.9654605263157895
+"threshold 0.35, with deny-list",PERSON,197,34,8,0.8528138528138528,0.9609756097560975,0.9036697247706422
+"threshold 0.35, with deny-list",EMAIL_ADDRESS,168,0,0,1.0,1.0,1.0
+"threshold 0.35, with deny-list",PHONE_NUMBER,153,0,0,1.0,1.0,1.0
+"threshold 0.35, with deny-list",BU_ID,69,0,0,1.0,1.0,1.0
+"threshold 0.35, with deny-list",ALL,587,34,8,0.9452495974235104,0.9865546218487395,0.9654605263157895
+"threshold 0.35, deny-list + place-word rule",PERSON,197,0,8,1.0,0.9609756097560975,0.9800995024875622
+"threshold 0.35, deny-list + place-word rule",EMAIL_ADDRESS,168,0,0,1.0,1.0,1.0
+"threshold 0.35, deny-list + place-word rule",PHONE_NUMBER,153,0,0,1.0,1.0,1.0
+"threshold 0.35, deny-list + place-word rule",BU_ID,69,0,0,1.0,1.0,1.0
+"threshold 0.35, deny-list + place-word rule",ALL,587,0,8,1.0,0.9865546218487395,0.9932318104906938
