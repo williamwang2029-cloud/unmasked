@@ -10,6 +10,7 @@ from dotenv import load_dotenv
 from reid import attacks, classify, llm, risk
 from reid.agent import run_agent
 from reid.config import load_config
+from reid.release_warnings import release_warnings
 
 load_dotenv()
 st.set_page_config(page_title="Unmasked: Re-identification Risk Meter", page_icon="🛡️", layout="wide")
@@ -110,14 +111,34 @@ with tabs[2]:
             fig.update_layout(yaxis_tickformat=".0%", xaxis_title="", yaxis_title="% uniquely identifiable")
             st.plotly_chart(fig, use_container_width=True)
 
+        LABELS = {"Year": "Year", "Class": "Class", "program": "Program", "FTFY": "First-time first-year",
+                  "affiliation": "Affiliation", "MAJfirstcode": "First major", "MAJsecondcode": "Second major",
+                  "begincol": "Began at college", "edaspire": "Education goal",
+                  "attend_voc": "Attended vocational", "attend_com": "Attended community college",
+                  "attend_col": "Attended other college", "attend_none": "No prior attendance",
+                  "attend_other": "Other prior attendance", "logdate": "Survey date", "duration": "Survey duration"}
+
         if len(quasi) >= 2:
-            combos = risk.riskiest_combos(df, quasi, max_size=2, k=k)
+            # attendance flags are all ~0%; leave them out to keep the grid readable
+            heat_qis = [q for q in quasi if not q.startswith("attend_")]
+            if len(heat_qis) < 2:
+                heat_qis = quasi
+            combos = risk.riskiest_combos(df, heat_qis, max_size=2, k=k)
             pairs = combos[combos["size"] == 2].copy()
-            pairs[["a", "b"]] = pairs["combo"].str.split(" + ", regex=False, expand=True)
-            heat = pairs.pivot(index="a", columns="b", values="pct_unique")
-            fig = px.imshow(heat, text_auto=".0%", color_continuous_scale="Blues",
-                            title="Riskiest pairs of fields (% unique)")
-            st.plotly_chart(fig, use_container_width=True)
+            if len(pairs):
+                pairs[["a", "b"]] = pairs["combo"].str.split(" + ", regex=False, expand=True)
+                both = pd.concat([pairs, pairs.rename(columns={"a": "b", "b": "a"})])   # make it symmetric
+                heat = (both.pivot(index="a", columns="b", values="pct_below_k")
+                            .reindex(index=heat_qis, columns=heat_qis))
+                heat = heat.rename(index=lambda c: LABELS.get(c, c), columns=lambda c: LABELS.get(c, c))
+                top = pairs.sort_values("pct_below_k", ascending=False).iloc[0]
+                fig = px.imshow(heat, text_auto=".0%", color_continuous_scale="Cividis", aspect="auto",
+                                labels=dict(x="", y="", color=f"% in groups < {k}"),
+                                title=f"Riskiest pair: {LABELS.get(top['a'], top['a'])} + "
+                                      f"{LABELS.get(top['b'], top['b'])}<br>puts {top['pct_below_k']:.0%} "
+                                      f"of students in groups smaller than {k}")
+                fig.update_layout(height=550, coloraxis_colorbar_tickformat=".0%")
+                st.plotly_chart(fig, use_container_width=True)
 
         col1, col2 = st.columns(2)
         with col1:
@@ -159,6 +180,18 @@ with tabs[3]:
                                scrub_comments=scrub, log=st.write)
             status.update(label="Done", state="complete")
         st.session_state.result = result
+        st.session_state.max_removed = max_sup
+        rw = release_warnings(
+            considered_qis=list(result["mitigation"]["levels"].keys()),
+            active_qis=result["mitigation"]["active_qis"],
+            analysis_status=result["utility"]["analysis_status"],
+            pct_removed=float(result["mitigation"]["suppressed_mask"].mean()),
+            max_removed=max_sup,
+        )
+        for w in rw["warnings"]:
+            st.warning(w)
+        for e in rw["errors"]:
+            st.error(e)
 
 # ---------------- 5. before / after ----------------
 with tabs[4]:
@@ -167,6 +200,17 @@ with tabs[4]:
     if r is None:
         st.info("Run the agent in tab 4.")
     else:
+        rw = release_warnings(
+            considered_qis=list(r["mitigation"]["levels"].keys()),
+            active_qis=r["mitigation"]["active_qis"],
+            analysis_status=r["utility"]["analysis_status"],
+            pct_removed=float(r["mitigation"]["suppressed_mask"].mean()),
+            max_removed=st.session_state.get("max_removed", cfg["targets"]["max_suppression"]),
+        )
+        for w in rw["warnings"]:
+            st.warning(w)
+        for e in rw["errors"]:
+            st.error(e)
         lab = r["label"]
         with st.container(border=True):
             st.subheader("🏷️ Privacy nutrition label")
@@ -203,6 +247,7 @@ with tabs[4]:
             st.subheader("Which analyses still work?")
             st.dataframe(pd.DataFrame([{"analysis by": k2, "status": v} for k2, v in r["utility"]["analysis_status"].items()]),
                          hide_index=True)
+            st.caption(f"Fields kept in the release: {rw['fields_kept']}")
             ms = res_json("mitigation_summary.json")
             mode = "protect_on" if r["protect_small_groups"] else "protect_off"
             if ms and mode in ms:
