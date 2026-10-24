@@ -204,12 +204,16 @@ with tabs[2]:
 
         col1, col2 = st.columns(2)
         with col1:
-            personas = {p: [c for c in cols if c in df.columns] for p, cols in cfg["personas"].items()}
-            pr = attacks.persona_risk(df, {p: c for p, c in personas.items() if c}, k)
-            fig = px.bar(pr, x="persona", y="pct_unique", text_auto=".0%", hover_data=["fields"],
-                         title="What different attackers could do", color_discrete_sequence=PALETTE)
-            fig.update_layout(yaxis_tickformat=".0%")
-            st.plotly_chart(fig, use_container_width=True)
+            personas = attacks.personas_for(df, cfg["personas"], quasi)
+            if not personas:
+                st.info("No quasi-identifiers to simulate an attacker with.")
+            else:
+                pr = attacks.persona_risk(df, personas, k)
+                if len(pr):
+                    fig = px.bar(pr, x="persona", y="pct_unique", text_auto=".0%", hover_data=["fields"],
+                                 title="What different attackers could do", color_discrete_sequence=PALETTE)
+                    fig.update_layout(yaxis_tickformat=".0%")
+                    st.plotly_chart(fig, use_container_width=True)
         with col2:
             g = cfg["roles"]["group_col"]
             if g in df.columns:
@@ -243,7 +247,7 @@ with tabs[3]:
             result = run_agent(df, roles, target_k=target_k, max_suppression=max_sup, protect_small_groups=protect,
                                group_col=cfg["roles"]["group_col"],
                                max_group_suppression=cfg["targets"]["max_group_suppression"],
-                               personas={p: c for p, c in cfg["personas"].items() if all(x in df.columns for x in c)},
+                               personas=attacks.personas_for(df, cfg["personas"], quasi),
                                scales=cfg["utility_analyses"]["scales"], by_list=cfg["utility_analyses"]["by"],
                                scrub_comments=scrub, log=st.write)
             status.update(label="Done", state="complete")
